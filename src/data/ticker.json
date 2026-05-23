@@ -1,0 +1,11 @@
+{
+  "$comment": "Central registry for ticker symbols. Edit to add/remove items in the header ticker. `id` is the CoinGecko coin ID; `symbol` is the display label.",
+  "coingecko": [
+    { "id": "bitcoin", "symbol": "BTC" },
+    { "id": "ethereum", "symbol": "ETH" },
+    { "id": "solana", "symbol": "SOL" },
+    { "id": "binancecoin", "symbol": "BNB" },
+    { "id": "avalanche-2", "symbol": "AVAX" },
+    { "id": "dogecoin", "symbol": "DOGE" }
+  ]
+}

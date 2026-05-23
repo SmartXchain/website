@@ -1,39 +1,151 @@
 ---
-// Static ticker. Becomes live in Phase 7.
-interface TickerItem {
-  symbol: string;
-  value: string;
-  change: number;
+import tickerConfig from '../data/ticker.json';
+
+interface Props {
+  // Optional filter to a subset of symbols (e.g. ["BTC","ETH"])
+  symbols?: string[];
 }
+const { symbols } = Astro.props;
 
-const items: TickerItem[] = [
-  { symbol: 'BTC', value: '$94,210', change: 1.2 },
-  { symbol: 'ETH', value: '$3,418', change: 0.8 },
-  { symbol: 'SOL', value: '$182', change: -0.6 },
-  { symbol: 'NVDA', value: '$842', change: -2.1 },
-  { symbol: 'AI-CHIP IDX', value: '+3.4%', change: 3.4 },
-  { symbol: 'L2 TVL', value: '$38.2B', change: 4.1 },
-];
-
-const fmt = (c: number) => `${c >= 0 ? '+' : ''}${c.toFixed(1)}%`;
+const all = tickerConfig.coingecko as Array<{ id: string; symbol: string }>;
+const items = symbols ? all.filter((i) => symbols.includes(i.symbol)) : all;
 ---
 
 <div class="border-y border-frontier-border bg-frontier-surface">
   <div
     class="container-wide flex gap-10 overflow-x-auto py-2.5 font-mono text-xs text-frontier-text-dim"
     role="region"
-    aria-label="Market ticker (static demo)"
+    aria-label="Live market ticker"
+    data-ticker
   >
     {
       items.map((it) => (
-        <span class="flex shrink-0 items-baseline gap-2">
+        <span class="flex shrink-0 items-baseline gap-2" data-symbol={it.id}>
           <strong class="font-semibold text-frontier-signal">{it.symbol}</strong>
-          <span class="text-frontier-text-muted">{it.value}</span>
-          <span class={it.change >= 0 ? 'text-frontier-signal' : 'text-frontier-danger'}>
-            {fmt(it.change)}
-          </span>
+          <span data-price class="text-frontier-text-muted">—</span>
+          <span data-change class="text-frontier-text-dim">—</span>
         </span>
       ))
     }
   </div>
 </div>
+
+<script>
+  interface PriceRow {
+    usd: number;
+    usd_24h_change: number;
+  }
+  type PriceMap = Record<string, PriceRow>;
+  interface CacheEnvelope {
+    ts: number;
+    data: PriceMap;
+  }
+
+  const CACHE_KEY = 'sxc:ticker:v1';
+  const CACHE_TTL_MS = 60_000;
+  const REFRESH_MS = 60_000;
+
+  const readCache = (): PriceMap | null => {
+    try {
+      const raw = sessionStorage.getItem(CACHE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as CacheEnvelope;
+      if (!parsed.ts || Date.now() - parsed.ts > CACHE_TTL_MS) return null;
+      return parsed.data;
+    } catch {
+      return null;
+    }
+  };
+
+  const writeCache = (data: PriceMap) => {
+    try {
+      sessionStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({ ts: Date.now(), data } satisfies CacheEnvelope),
+      );
+    } catch {
+      // ignore quota / disabled storage
+    }
+  };
+
+  const fmtPrice = (n: number): string => {
+    if (n >= 10_000) return `$${Math.round(n).toLocaleString()}`;
+    if (n >= 1000) return `$${n.toFixed(0)}`;
+    if (n >= 1) return `$${n.toFixed(2)}`;
+    return `$${n.toFixed(4)}`;
+  };
+
+  const fmtChange = (c: number): string =>
+    `${c >= 0 ? '+' : ''}${c.toFixed(1)}%`;
+
+  const render = (root: HTMLElement, data: PriceMap) => {
+    const items = root.querySelectorAll<HTMLElement>('[data-symbol]');
+    items.forEach((el) => {
+      const id = el.dataset.symbol!;
+      const d = data[id];
+      if (!d) return;
+      const priceEl = el.querySelector<HTMLElement>('[data-price]');
+      const changeEl = el.querySelector<HTMLElement>('[data-change]');
+      if (priceEl) priceEl.textContent = fmtPrice(d.usd);
+      if (changeEl) {
+        changeEl.textContent = fmtChange(d.usd_24h_change);
+        changeEl.classList.remove(
+          'text-frontier-signal',
+          'text-frontier-danger',
+          'text-frontier-text-dim',
+        );
+        changeEl.classList.add(
+          d.usd_24h_change >= 0
+            ? 'text-frontier-signal'
+            : 'text-frontier-danger',
+        );
+      }
+    });
+  };
+
+  const fetchPrices = async (ids: string[]): Promise<PriceMap | null> => {
+    try {
+      const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(',')}&vs_currencies=usd&include_24hr_change=true`;
+      const r = await fetch(url, {
+        headers: { Accept: 'application/json' },
+      });
+      if (!r.ok) return null;
+      return (await r.json()) as PriceMap;
+    } catch {
+      return null;
+    }
+  };
+
+  const update = async (root: HTMLElement) => {
+    const items = root.querySelectorAll<HTMLElement>('[data-symbol]');
+    if (items.length === 0) return;
+    const ids = Array.from(items)
+      .map((el) => el.dataset.symbol)
+      .filter((id): id is string => !!id);
+
+    const cached = readCache();
+    if (cached) render(root, cached);
+
+    const fresh = await fetchPrices(ids);
+    if (fresh) {
+      writeCache(fresh);
+      render(root, fresh);
+    }
+  };
+
+  // Per-element refresh handles so View Transitions don't double-bind
+  const timers = new WeakMap<HTMLElement, ReturnType<typeof setInterval>>();
+
+  const wire = () => {
+    document.querySelectorAll<HTMLElement>('[data-ticker]').forEach((root) => {
+      const existing = timers.get(root);
+      if (existing) clearInterval(existing);
+      update(root);
+      const t = setInterval(() => update(root), REFRESH_MS);
+      timers.set(root, t);
+    });
+  };
+
+  wire();
+  document.addEventListener('astro:page-load', wire);
+</script>

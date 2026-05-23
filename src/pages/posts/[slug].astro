@@ -6,6 +6,7 @@ import { formatStamp, readTime, sortByDateDesc } from '../../lib/posts';
 import Callout from '../../components/mdx/Callout.astro';
 import Quote from '../../components/mdx/Quote.astro';
 import Figure from '../../components/mdx/Figure.astro';
+import Ticker from '../../components/Ticker.astro';
 import PostCard from '../../components/PostCard.astro';
 
 export const prerender = true;
@@ -38,7 +39,7 @@ const related = allPosts
   .slice(0, 3);
 
 const { Content } = await post.render();
-const components = { Callout, Quote, Figure };
+const components = { Callout, Quote, Figure, Ticker };
 ---
 
 <Base
