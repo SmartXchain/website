@@ -8,10 +8,7 @@ export const SITE = {
     'A specialist publication for Web3, AI, and deep tech. Signal from the frontier.',
   url: 'https://smartxchain.com',
   // Newsletter — Buttondown.email integration.
-  // Set this to your Buttondown username (e.g. "smartxchain") once your
-  // account is provisioned. Until set, the subscribe form will POST to
-  // a non-existent endpoint; replace the literal below in one edit.
-  buttondownUsername: 'YOUR-BUTTONDOWN-USERNAME',
+  buttondownUsername: 'smartxchain',
   newsletter: {
     name: 'The Chain Letter',
     pitch:

@@ -12,7 +12,9 @@ const allPosts = await getCollection('posts', ({ data }) => !data.draft);
 const sorted = sortByDateDesc(allPosts);
 
 const featured = sorted.find((p) => p.data.featured) ?? sorted[0];
-const remainder = sorted.filter((p) => p.slug !== featured.slug);
+const remainder = featured
+  ? sorted.filter((p) => p.slug !== featured.slug)
+  : [];
 
 const signalItems = remainder.slice(0, 4);
 
@@ -22,21 +24,43 @@ const latestPerCategory = sections
 const categoryGrid = sortByDateDesc(latestPerCategory).slice(0, 3);
 
 const signalOfWeek =
-  remainder.find((p) => p.data.category === 'research') ?? remainder[0];
+  remainder.find((p) => p.data.category === 'research') ?? remainder[1];
 ---
 
 <Base title="SmartXChain — Signal from the frontier">
-  <section class="container-wide grid gap-12 py-16 md:grid-cols-[2.2fr_1fr] md:py-20">
-    <HeroPost post={featured} />
-    <SignalSidebar items={signalItems} />
-  </section>
+  {
+    featured ? (
+      <section
+        class={`container-wide grid gap-12 py-16 md:py-20 ${signalItems.length > 0 ? 'md:grid-cols-[2.2fr_1fr]' : ''}`}
+      >
+        <HeroPost post={featured} />
+        {signalItems.length > 0 && <SignalSidebar items={signalItems} />}
+      </section>
+    ) : (
+      <section class="container-wide py-32">
+        <p class="kicker">// no posts yet</p>
+        <h1 class="mt-6 max-w-[18ch] font-display text-5xl font-extrabold tracking-tight text-white md:text-7xl">
+          Signal from the frontier.
+        </h1>
+        <p class="mt-6 max-w-prose text-lg text-frontier-text-muted">
+          First issue inbound. Subscribe to The Chain Letter to know when it ships.
+        </p>
+      </section>
+    )
+  }
 
-  <section class="container-wide pb-16">
-    <div class="kicker">// Across the Frontier</div>
-    <div class="mt-6 grid gap-6 md:grid-cols-3">
-      {categoryGrid.map((p) => <PostCard post={p} />)}
-    </div>
-  </section>
+  {
+    categoryGrid.length > 0 && (
+      <section class="container-wide pb-16">
+        <div class="kicker">// Across the Frontier</div>
+        <div class="mt-6 grid gap-6 md:grid-cols-3">
+          {categoryGrid.map((p) => (
+            <PostCard post={p} />
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   {signalOfWeek && <SignalOfWeek post={signalOfWeek} />}
 
