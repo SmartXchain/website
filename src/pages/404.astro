@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import { sections } from '../lib/sections';
+---
+
+<Base title="404 — SmartXChain" description="Page not found.">
+  <section class="container-wide py-32 md:py-40">
+    <div class="kicker">// 404 · NO SIGNAL</div>
+    <h1
+      class="mt-6 max-w-[20ch] font-display text-6xl font-extrabold leading-[1.02] tracking-tight text-white md:text-8xl"
+    >
+      Nothing on this frequency.
+    </h1>
+    <p class="mt-6 max-w-prose text-lg text-frontier-text-muted">
+      The page you tried to reach isn't here. Could be moved, could be a typo,
+      could be something we haven't published yet.
+    </p>
+
+    <div class="mt-12 grid gap-3 md:grid-cols-3">
+      <a
+        href="/"
+        class="group border border-frontier-border bg-frontier-surface p-5 transition-colors hover:border-frontier-border-strong"
+      >
+        <div class="ui-text">// home</div>
+        <div class="mt-2 font-display text-xl font-bold text-white group-hover:text-frontier-signal">
+          Back to the front page →
+        </div>
+      </a>
+      <a
+        href="/archive"
+        class="group border border-frontier-border bg-frontier-surface p-5 transition-colors hover:border-frontier-border-strong"
+      >
+        <div class="ui-text">// archive</div>
+        <div class="mt-2 font-display text-xl font-bold text-white group-hover:text-frontier-signal">
+          Browse every article →
+        </div>
+      </a>
+      <a
+        href="/search"
+        class="group border border-frontier-border bg-frontier-surface p-5 transition-colors hover:border-frontier-border-strong"
+      >
+        <div class="ui-text">// search</div>
+        <div class="mt-2 font-display text-xl font-bold text-white group-hover:text-frontier-signal">
+          Search the archive →
+        </div>
+      </a>
+    </div>
+
+    <div class="mt-12">
+      <div class="kicker">// or jump to a section</div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        {
+          sections.map((s) => (
+            <a
+              href={`/${s.slug}`}
+              class="border border-frontier-border bg-frontier-surface px-3 py-1.5 font-mono text-xs uppercase tracking-ui text-frontier-text-dim transition-colors hover:border-frontier-border-strong hover:text-frontier-text"
+            >
+              {s.name}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
