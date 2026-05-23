@@ -31,3 +31,8 @@ Thumbs.db
 
 # Pagefind index (regenerated on build)
 public/pagefind/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example

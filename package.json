@@ -8,17 +8,20 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build && pagefind --site dist",
-    "preview": "astro preview",
+    "preview": "npm run build && wrangler dev",
     "astro": "astro",
     "check": "astro check",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "engines": {
     "node": ">=18.17.1"
   },
   "dependencies": {
     "@astrojs/check": "0.9.9",
+    "@astrojs/cloudflare": "11",
     "@astrojs/mdx": "3.1.9",
     "@astrojs/rss": "4.0.18",
     "@astrojs/sitemap": "3.4.1",
@@ -31,6 +34,7 @@
     "pagefind": "^1.5.2",
     "prettier": "3.4.2",
     "prettier-plugin-astro": "0.14.1",
-    "prettier-plugin-tailwindcss": "0.6.9"
+    "prettier-plugin-tailwindcss": "0.6.9",
+    "wrangler": "^4.94.0"
   }
 }
