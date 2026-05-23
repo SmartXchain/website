@@ -92,4 +92,11 @@
   .prose-frontier img {
     @apply my-8 w-full border border-frontier-border;
   }
+
+  .archive-chip {
+    @apply inline-block cursor-pointer border border-frontier-border bg-frontier-surface px-3 py-1.5 font-mono text-xs uppercase tracking-ui text-frontier-text-dim transition-colors hover:border-frontier-border-strong hover:text-frontier-text;
+  }
+  .archive-chip[data-active='true'] {
+    @apply border-frontier-signal text-frontier-signal;
+  }
 }

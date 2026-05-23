@@ -1,0 +1,229 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import type { Page, GetStaticPathsOptions } from 'astro';
+import Base from '../../layouts/Base.astro';
+import PostRow from '../../components/PostRow.astro';
+import { sortByDateDesc } from '../../lib/posts';
+import { sections } from '../../lib/sections';
+
+export const prerender = true;
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const posts = sortByDateDesc(
+    await getCollection('posts', ({ data }) => !data.draft),
+  );
+  return paginate(posts, { pageSize: 20 });
+}
+
+interface Props {
+  page: Page<CollectionEntry<'posts'>>;
+}
+const { page } = Astro.props;
+
+const allPosts = sortByDateDesc(
+  await getCollection('posts', ({ data }) => !data.draft),
+);
+const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))].sort(
+  (a, b) => b - a,
+);
+const totalPosts = allPosts.length;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Archive — SmartXChain',
+  description: `Every article published on SmartXChain — ${totalPosts} so far.`,
+  url: new URL(Astro.url.pathname, Astro.site).href,
+};
+---
+
+<Base
+  title="Archive — SmartXChain"
+  description={`Every article published on SmartXChain — ${totalPosts} so far.`}
+>
+  <section class="container-wide py-16">
+    <div class="kicker">// archive</div>
+    <h1 class="mt-3 font-display text-5xl font-extrabold tracking-tight text-white md:text-6xl">
+      Archive
+    </h1>
+    <p class="mt-4 max-w-prose text-lg text-frontier-text-muted">
+      Every article published on SmartXChain — {totalPosts} so far. Filter by
+      section or year.
+    </p>
+
+    <div class="mt-10 border-y border-frontier-border py-5">
+      <div class="ui-text mb-3">// section</div>
+      <div class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="archive-chip"
+          data-filter="category"
+          data-value=""
+          data-active="true">All</button
+        >
+        {
+          sections.map((s) => (
+            <button
+              type="button"
+              class="archive-chip"
+              data-filter="category"
+              data-value={s.slug}
+            >
+              {s.name}
+            </button>
+          ))
+        }
+      </div>
+
+      {
+        years.length > 0 && (
+          <>
+            <div class="ui-text mb-3 mt-5">// year</div>
+            <div class="flex flex-wrap gap-2">
+              <button
+                type="button"
+                class="archive-chip"
+                data-filter="year"
+                data-value=""
+                data-active="true"
+              >
+                All
+              </button>
+              {years.map((y) => (
+                <button
+                  type="button"
+                  class="archive-chip"
+                  data-filter="year"
+                  data-value={String(y)}
+                >
+                  {y}
+                </button>
+              ))}
+            </div>
+          </>
+        )
+      }
+    </div>
+
+    <div class="mt-8">
+      <div id="archive-meta" class="ui-text border-b border-frontier-border pb-3">
+        // {page.data.length} POST{page.data.length === 1 ? '' : 'S'}
+      </div>
+      <div id="archive-list">
+        {
+          page.data.map((p) => (
+            <div
+              data-row
+              data-category={p.data.category}
+              data-year={String(p.data.date.getFullYear())}
+            >
+              <PostRow post={p} />
+            </div>
+          ))
+        }
+      </div>
+      <p
+        id="archive-empty"
+        class="ui-text mt-12 hidden text-center"
+      >
+        // NO RESULTS · clear a filter or <a href="/archive" class="text-frontier-signal hover:opacity-80">reset</a>
+      </p>
+    </div>
+
+    {
+      (page.url.prev || page.url.next) && (
+        <nav class="ui-text mt-12 flex items-center justify-between border-t border-frontier-border pt-6">
+          {page.url.prev ? (
+            <a href={page.url.prev} class="hover:text-frontier-signal">
+              ← Newer
+            </a>
+          ) : (
+            <span class="opacity-30">← Newer</span>
+          )}
+          <span>
+            Page {page.currentPage} / {page.lastPage}
+          </span>
+          {page.url.next ? (
+            <a href={page.url.next} class="hover:text-frontier-signal">
+              Older →
+            </a>
+          ) : (
+            <span class="opacity-30">Older →</span>
+          )}
+        </nav>
+      )
+    }
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+</Base>
+
+<script>
+  const init = () => {
+    const chips = document.querySelectorAll<HTMLButtonElement>('.archive-chip');
+    if (chips.length === 0) return;
+    const rows = document.querySelectorAll<HTMLElement>('[data-row]');
+    const meta = document.getElementById('archive-meta');
+    const empty = document.getElementById('archive-empty');
+
+    const readState = () => {
+      const sp = new URLSearchParams(window.location.search);
+      return {
+        category: sp.get('category') ?? '',
+        year: sp.get('year') ?? '',
+      };
+    };
+
+    const writeState = (state: { category: string; year: string }) => {
+      const sp = new URLSearchParams();
+      if (state.category) sp.set('category', state.category);
+      if (state.year) sp.set('year', state.year);
+      const qs = sp.toString();
+      const url = qs
+        ? `${window.location.pathname}?${qs}`
+        : window.location.pathname;
+      window.history.replaceState({}, '', url);
+    };
+
+    const apply = (state: { category: string; year: string }) => {
+      let visible = 0;
+      rows.forEach((row) => {
+        const cat = row.dataset.category ?? '';
+        const yr = row.dataset.year ?? '';
+        const match =
+          (!state.category || cat === state.category) &&
+          (!state.year || yr === state.year);
+        row.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+      if (meta) {
+        meta.textContent = `// ${visible} POST${visible === 1 ? '' : 'S'}`;
+      }
+      if (empty) {
+        empty.classList.toggle('hidden', visible !== 0);
+      }
+      chips.forEach((chip) => {
+        const filter = chip.dataset.filter ?? '';
+        const value = chip.dataset.value ?? '';
+        const current = filter === 'category' ? state.category : state.year;
+        chip.dataset.active = String(current === value);
+      });
+    };
+
+    apply(readState());
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const filter = chip.dataset.filter as 'category' | 'year';
+        const value = chip.dataset.value ?? '';
+        const cur = readState();
+        cur[filter] = cur[filter] === value ? '' : value;
+        writeState(cur);
+        apply(cur);
+      });
+    });
+  };
+
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>
