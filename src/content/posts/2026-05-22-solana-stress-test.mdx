@@ -1,0 +1,34 @@
+---
+title: "Solana's first real bank run was its best stress test"
+date: 2026-05-22T11:02:00Z
+author: hector-garza
+category: chain-watch
+tags: ["solana", "defi", "stress-test", "validators"]
+excerpt: "A $1.8B redemption cascade across three protocols held. The post-mortem the validators don't want you to read."
+featured: false
+---
+
+> Editorial note: this is a seed post written for design QA during the Phase 2
+> content-schema buildout. Replace before public launch.
+
+For about ninety minutes yesterday morning, three lending protocols on Solana saw simultaneous, correlated redemptions that hit a combined notional of $1.8B. By any reasonable definition that's a bank run. By the definition the protocols themselves wrote into their own docs, it should have triggered at least one cascade liquidation.
+
+It didn't. And the reason it didn't is worth understanding — because it's not the reason the marketing teams are giving.
+
+## The setup
+
+A leveraged farming strategy that had quietly accumulated $400M of exposure across Kamino, MarginFi, and a third protocol I won't name (it doesn't matter; the lesson is structural) started unwinding at 06:18 UTC. The unwind triggered automated redemptions from a half-dozen vaults that were tracking it. Those redemptions cascaded into related vaults. Within twenty minutes, the queue was deep enough that any sensible risk model would have started liquidating.
+
+## What actually saved them
+
+Three things, in order of importance:
+
+1. **Jito's MEV market did its job.** Validators preferred sequencing the unwind cleanly over front-running it, because the bundle tips were better. Coordination through self-interest worked.
+2. **The new priority fee market kept transactions deterministic.** Pre-2025, you'd have seen failed transactions stack up and amplify the panic. Yesterday, every redemption confirmed within two slots.
+3. **The protocols had — quietly, since the December incident — added circuit breakers on redemption velocity.** Nobody marketed these because nobody wanted to admit they were needed.
+
+## What this proves
+
+Solana, at the chain level, can absorb a $1.8B coordinated redemption without throwing a fit. That's a non-trivial claim and it's now backed by evidence. The protocols on top of Solana — that's still rough. The circuit-breaker silence is telling: the people building DeFi infrastructure are learning from incidents, but they're not yet willing to be transparent about how.
+
+The next stress test will be larger. We should be looking at what we don't yet have circuit breakers for.

@@ -1,0 +1,36 @@
+---
+title: "Anthropic's Opus 4.7 makes a quiet claim on the agent economy"
+date: 2026-05-23T06:14:00Z
+author: hector-garza
+category: ai-lab
+tags: ["anthropic", "agents", "long-context", "model-release"]
+excerpt: "Long-context isn't the headline. Persistent identity across sessions is — and it's the first real economic primitive shipped inside a frontier model."
+featured: true
+---
+
+> Editorial note: this is a seed post written for design QA during the Phase 2
+> content-schema buildout. Replace before public launch.
+
+The headline on yesterday's Opus 4.7 release was "1M-token context." That's the wrong story.
+
+The actual interesting change is buried in the system card: every model run now ships with an opaque, model-signed identity token that persists across sessions when the developer opts in. Anthropic calls it "agent identity." It's the first real economic primitive ever shipped inside a frontier model.
+
+## Why this matters
+
+Until now, "AI agents" have been a fiction held together with prompt engineering and Stripe API keys. Each invocation is anonymous. The model has no continuous self, no reputation, no track record. You can't extend it credit. You can't refuse to serve it. You can't even tell if the agent you served yesterday is the same one back today.
+
+A signed persistent identity changes all of that. Three implications, in increasing order of consequence:
+
+1. **Spam economics flip.** If an agent has reputation, you can charge it less. If it has none, charge it more. The asymmetry that made bot traffic free goes away.
+2. **Counterparty risk becomes computable.** Marketplaces can refuse low-reputation agents. Lenders can extend onchain credit lines. Insurance becomes possible.
+3. **The "agent owns the wallet" question becomes urgent.** Right now, a human owns the wallet and the agent borrows the keys. With persistent identity, the agent itself can have a primary key. Anthropic is studiously not saying whether that's the plan.
+
+## What builders are already doing
+
+Three teams I spoke to are wiring this up to existing onchain primitives. The most aggressive is a Berlin-based group rebuilding their KYC pipeline around model-signed identity instead of email. Their thesis: "We don't care which human is behind the agent. We care whether the agent itself has a history."
+
+## The next 18 months
+
+If this becomes the standard, the first $100B company built on agent commerce will look more like a payments network than a model lab. Watch Stripe. Watch Coinbase. Watch the second-tier model providers scramble to match — because matching this is a multi-quarter engineering effort, not a feature flag.
+
+The benchmark wars are over. The identity wars are starting.

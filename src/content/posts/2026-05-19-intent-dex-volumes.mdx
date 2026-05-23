@@ -1,0 +1,40 @@
+---
+title: "Intent-based DEX volume hit a new ATH and decoupled from spot price"
+date: 2026-05-19T14:30:00Z
+author: hector-garza
+category: research
+tags: ["dex", "intents", "research", "onchain-volume"]
+excerpt: "Onchain volume on intent-based DEXes diverged from spot price for the first time. Three competing theses on what it means — and which one is actually right."
+featured: false
+---
+
+> Editorial note: this is a seed post written for design QA during the Phase 2
+> content-schema buildout. Replace before public launch.
+
+For the last three years, onchain DEX volume has been a reliable second-derivative of spot price: when prices go up, volume goes up; when prices retrace, volume falls. The correlation has been tight enough that most onchain analysts use it as a sanity check.
+
+That broke this week. Specifically, it broke on the intent-based DEX category — UniswapX, 1inch Fusion, CowSwap, and the smaller intent venues. Combined volume hit a new all-time high while ETH spot was flat-to-down.
+
+This isn't noise. There are three plausible theses for what's going on, and they imply very different things about the next 18 months.
+
+## Thesis 1: Solver competition is finally working
+
+The optimist read. The intent model promised better execution through solver competition. That promise has, until now, been mostly aspirational — solver concentration has been high, and most "intent execution" was really just routing through the same handful of market makers.
+
+Recent solver-onboarding flows have brought in 14 new solvers across the major intent venues this quarter. If real competition has finally arrived, traders should prefer intent venues to AMMs for any non-trivial trade — and the volume migration we're seeing is the expected behavior.
+
+## Thesis 2: We're watching washtrading
+
+The skeptic read. Intent venues have rebate programs. Rebate programs incentivize round-trip volume that nets to zero. The volume can be technically real on-chain while not representing actual price-discovery activity.
+
+The way to falsify this thesis is to look at unique counterparties and inter-trade time distributions. Early data is mixed. Some venues look clearly legitimate. At least one looks suspicious.
+
+## Thesis 3: Agent flow
+
+The interesting read. We've been writing about AI-driven trading agents on these pages for months. If the agents are now meaningful volume contributors — and our conversations with three solver teams suggest they are — the decoupling makes sense. Agents trade on predicted edge, not on spot direction. They prefer intent venues because intent venues' MEV protection profile fits their execution constraints.
+
+## Which is right
+
+Honestly: a mix of all three, in roughly that order of importance. The most useful chart to watch over the next four weeks is the ratio of intent-venue volume to AMM volume on the same trading pairs. If that ratio holds above 0.6, the regime has changed. If it reverts to its 18-month average of 0.35, this was a blip.
+
+We'll be tracking it.

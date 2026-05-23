@@ -1,0 +1,38 @@
+---
+title: "The benchmark wars are over. Welcome to evals-as-a-service."
+date: 2026-05-20T09:45:00Z
+author: hector-garza
+category: ai-lab
+tags: ["evals", "procurement", "benchmarks", "model-evaluation"]
+excerpt: "Three startups are quietly pricing model behavior. The implications for enterprise AI procurement are larger than anyone is saying."
+featured: false
+---
+
+> Editorial note: this is a seed post written for design QA during the Phase 2
+> content-schema buildout. Replace before public launch.
+
+If you've been following AI benchmarks for the last three years, you know the rhythm: a new model ships, it tops MMLU/HumanEval/whatever, the lab claims state-of-the-art, the post-launch evals reveal the score was contaminated or the eval was overfit, the cycle repeats. Bench-maxing as a category has eaten itself.
+
+What's quietly replacing it is more interesting and almost entirely missed by the press: evals-as-a-service.
+
+## The three companies pricing model behavior
+
+Three startups, all founded in the last 18 months, are selling continuous behavioral evaluation as a paid product to enterprises:
+
+- One sells deterministic harnesses for verifying agent behavior in regulated workflows. Their customers are banks and a couple of insurers. Pricing is a per-eval-run model that scales with the number of behaviors under test.
+- One sells per-task fine-grained skill evaluation — think "how good is this model at the specific kind of legal contract redlining we do." Customers are law firms and biglaw-adjacent corporates.
+- One sells red-team-as-a-service, focused on jailbreak resistance for customer-facing agents. The pricing tier escalates with brand exposure.
+
+None of them call what they do "benchmarking." All of them are quietly competing for the same procurement budget line.
+
+## Why this matters for procurement
+
+Enterprise AI procurement up to this point has been mostly vibes: a CTO talks to a vendor, the vendor demos, the deal closes, someone runs MMLU as ad hoc due diligence. That stops being viable when you're committing seven figures and putting the model in a customer-facing role.
+
+Evals-as-a-service is filling the gap. It's also creating a moat: once an enterprise commits to a behavioral eval harness, switching models means redoing the eval. The eval companies are effectively becoming the layer that locks in (or unlocks) the underlying model vendor.
+
+That's a much more important market position than anyone is treating it as.
+
+## The thesis
+
+The next phase of AI is going to be sold by behavior, not by leaderboard ranking. The companies that own the behavioral measurement layer will end up with more leverage than people expect — including, eventually, more leverage than some of the model labs themselves.

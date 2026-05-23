@@ -40,8 +40,22 @@ Cloudflare Pages provisions Node automatically — see `.nvmrc`.
 ## Publishing a post
 
 1. Create `src/content/posts/YYYY-MM-DD-slug.mdx`
-2. Fill in frontmatter (see `docs/EDITORIAL.md` once written)
-3. `git push` — Cloudflare Pages builds and deploys automatically
+2. Fill in frontmatter — full reference in [`docs/EDITORIAL.md`](docs/EDITORIAL.md)
+3. `git push` — Cloudflare Pages builds and deploys automatically (~2 min)
+
+Quick frontmatter cheatsheet:
+
+```yaml
+---
+title: "Your headline"
+date: 2026-05-23T06:14:00Z
+author: hector-garza
+category: chain-watch    # or ai-lab, deep-tech, markets, research, opinion
+tags: ["tag-one", "tag-two"]
+excerpt: "One-sentence hook (max 280 chars)."
+featured: false
+---
+```
 
 ## Deploys
 
