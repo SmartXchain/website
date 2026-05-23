@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartXChain — Concept Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after { box-sizing: border-box; }
+  html,body { margin:0; padding:0; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #f5f5f0;
+    color: #111;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* =========================
+     Cover / Intro
+     ========================= */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 8vw;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(0,200,140,0.08), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(80,80,255,0.08), transparent 50%),
+      #f5f5f0;
+  }
+  .cover .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 24px;
+  }
+  .cover h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    margin: 0 0 24px;
+    max-width: 14ch;
+  }
+  .cover h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: #0a6b4e;
+  }
+  .cover p.lede {
+    font-size: 20px;
+    max-width: 60ch;
+    color: #333;
+    margin: 0 0 48px;
+  }
+  .compare {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .compare-card {
+    border: 1px solid #1112;
+    padding: 24px;
+    background: #fff;
+    border-radius: 4px;
+  }
+  .compare-card .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 12px;
+  }
+  .compare-card h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: 28px;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .compare-card .sub {
+    color: #444;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .compare-card ul {
+    list-style: none; padding: 0; margin: 0;
+    font-size: 13px; color: #333;
+  }
+  .compare-card li::before {
+    content: "→ "; color: #0a6b4e; margin-right: 4px;
+  }
+  .compare-card li { padding: 4px 0; }
+
+  /* Section dividers between concepts */
+  .divider {
+    padding: 60px 8vw;
+    background: #111;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .divider .num {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .divider h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: clamp(40px, 5vw, 64px);
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  .divider .pitch { color: #bbb; max-width: 60ch; font-family: 'Inter', sans-serif; }
+  .divider .why {
+    margin-top: 24px;
+    display: inline-block;
+    border-left: 2px solid #0a6b4e;
+    padding-left: 16px;
+    color: #ccc;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    max-width: 70ch;
+  }
+
+  /* =========================
+     CONCEPT A — FRONTIER
+     ========================= */
+  .frontier {
+    background: #0a0e0c;
+    color: #d8e6dc;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 0;
+  }
+  .frontier .wrap { padding: 40px 6vw; }
+  .frontier .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 6vw; border-bottom: 1px solid #1c2620;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #6a8a7a;
+  }
+  .frontier .logo {
+    color: #4ade80; font-weight: 700; font-size: 14px; letter-spacing: 0.2em;
+  }
+  .frontier .logo::before { content: "▲ "; color: #4ade80; }
+  .frontier .topbar .nav span { margin-left: 24px; cursor: pointer; }
+  .frontier .topbar .nav span:hover { color: #4ade80; }
+  .frontier .ticker {
+    background: #0d1411; border-top: 1px solid #1c2620; border-bottom: 1px solid #1c2620;
+    overflow: hidden; padding: 10px 0;
+    font-size: 12px; color: #88a899;
+    display: flex; gap: 40px; padding-left: 6vw;
+  }
+  .frontier .ticker span strong { color: #4ade80; margin-right: 4px; }
+  .frontier .ticker .down strong { color: #f87171; }
+  .frontier .hero {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr;
+    gap: 48px;
+    padding: 60px 6vw;
+    border-bottom: 1px solid #1c2620;
+  }
+  .frontier .hero .kicker {
+    color: #4ade80; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .frontier .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    color: #fff;
+    font-size: clamp(38px, 4.5vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+  }
+  .frontier .hero p { color: #b8c8be; font-size: 16px; max-width: 60ch; font-family: 'Inter', sans-serif; }
+  .frontier .hero .meta {
+    margin-top: 24px; font-size: 12px; color: #6a8a7a; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .frontier .sidebox {
+    border: 1px solid #1c2620; padding: 24px; background: #0d1411;
+  }
+  .frontier .sidebox h4 {
+    margin: 0 0 16px; font-size: 12px; color: #4ade80; letter-spacing: 0.2em; text-transform: uppercase;
+  }
+  .frontier .sidebox .item {
+    border-bottom: 1px dashed #1c2620; padding: 12px 0; font-size: 13px; color: #d8e6dc;
+    font-family: 'Inter', sans-serif;
+  }
+  .frontier .sidebox .item:last-child { border-bottom: none; }
+  .frontier .sidebox .item small { display:block; color:#6a8a7a; font-family: 'IBM Plex Mono', monospace; font-size: 11px; margin-top: 4px; }
+
+  .frontier .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    padding: 60px 6vw;
+    border-bottom: 1px solid #1c2620;
+  }
+  .frontier .card .label {
+    color: #4ade80; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .frontier .card h3 {
+    font-family: 'Fraunces', serif; font-weight: 700; color:#fff;
+    font-size: 24px; line-height: 1.15; margin: 0 0 12px; letter-spacing: -0.01em;
+  }
+  .frontier .card p { color: #9eb4a6; font-size: 14px; font-family: 'Inter', sans-serif; }
+  .frontier .card .timestamp { font-size: 11px; color: #6a8a7a; margin-top: 8px; }
+
+  .frontier .signal {
+    padding: 60px 6vw;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+  }
+  .frontier .signal h2 {
+    font-family: 'Fraunces', serif; color: #fff; font-weight: 800;
+    font-size: 36px; margin: 0 0 24px; letter-spacing: -0.02em;
+  }
+  .frontier .signal .barchart { display: flex; align-items: flex-end; gap: 8px; height: 180px; margin-top: 16px;}
+  .frontier .signal .barchart div {
+    flex: 1; background: linear-gradient(to top, #0a6b4e, #4ade80);
+    border-radius: 2px 2px 0 0;
+  }
+  .frontier .signal .legend { font-size: 11px; color: #6a8a7a; margin-top: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .frontier .signal .quote {
+    border-left: 2px solid #4ade80; padding: 8px 20px; font-family: 'Fraunces', serif;
+    font-style: italic; color: #d8e6dc; font-size: 22px; line-height: 1.4;
+  }
+  .frontier .signal .quote .who { display: block; font-size: 12px; color: #6a8a7a; margin-top: 12px; font-family: 'IBM Plex Mono', monospace; font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* =========================
+     CONCEPT B — DAILY
+     ========================= */
+  .daily {
+    background: #fafaf7;
+    color: #1a1a1a;
+  }
+  .daily .head {
+    border-bottom: 2px solid #111;
+    padding: 24px 6vw 16px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 24px;
+  }
+  .daily .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #666;
+  }
+  .daily .masthead {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(40px, 6vw, 76px);
+    letter-spacing: -0.04em;
+    text-align: center;
+    line-height: 0.9;
+  }
+  .daily .masthead em { font-style: italic; font-weight: 400; }
+  .daily .tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #666;
+    text-align: right;
+  }
+  .daily .nav {
+    border-bottom: 1px solid #11122;
+    padding: 12px 6vw;
+    display: flex;
+    gap: 28px;
+    font-size: 13px;
+    font-weight: 500;
+    overflow-x: auto;
+  }
+  .daily .nav a { color: #111; text-decoration: none; white-space: nowrap; }
+  .daily .nav a.active { color: #b03a2e; }
+  .daily .feature {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 48px;
+    padding: 48px 6vw;
+    border-bottom: 1px solid #11122;
+  }
+  .daily .feature .hero-img {
+    aspect-ratio: 16/10;
+    background:
+      linear-gradient(135deg, rgba(176,58,46,0.6), rgba(20,40,90,0.7)),
+      radial-gradient(circle at 30% 40%, #f4e2c4, transparent 50%),
+      linear-gradient(45deg, #2d3a52, #5a3a52);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .daily .feature .hero-img::after {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 3px);
+  }
+  .daily .feature .text .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    color: #b03a2e;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .daily .feature h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin: 0 0 16px;
+  }
+  .daily .feature p.dek {
+    font-size: 18px;
+    color: #333;
+    line-height: 1.5;
+    margin: 0 0 24px;
+    max-width: 50ch;
+  }
+  .daily .feature .byline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #666;
+  }
+  .daily .stories {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    padding: 48px 6vw;
+    border-bottom: 1px solid #11122;
+  }
+  .daily .story .thumb {
+    aspect-ratio: 4/3;
+    border-radius: 2px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .daily .story:nth-child(1) .thumb { background: linear-gradient(135deg, #1a3a5c, #4a7a9c); }
+  .daily .story:nth-child(2) .thumb { background: linear-gradient(135deg, #c4a878, #6b4f3a); }
+  .daily .story:nth-child(3) .thumb { background: linear-gradient(135deg, #2a6b4e, #4a8a6e); }
+  .daily .story:nth-child(4) .thumb { background: linear-gradient(135deg, #6b2a4e, #b03a6e); }
+  .daily .story .cat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #b03a2e;
+    margin-bottom: 6px;
+  }
+  .daily .story h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.2;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .daily .story .meta {
+    font-size: 12px; color: #666;
+  }
+  .daily .sections {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 48px;
+    padding: 48px 6vw;
+  }
+  .daily .sections .colhead {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #111;
+    border-bottom: 1px solid #111;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+  }
+  .daily .review {
+    border-bottom: 1px solid #eee;
+    padding: 20px 0;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 20px;
+  }
+  .daily .review .score {
+    font-family: 'Fraunces', serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: #b03a2e;
+    line-height: 1;
+  }
+  .daily .review .score small { display: block; font-size: 10px; letter-spacing: 0.2em; color:#666; font-family: 'JetBrains Mono', monospace; font-weight: 400; margin-top: 4px; }
+  .daily .review h4 { font-family: 'Fraunces', serif; font-size: 19px; margin: 0 0 4px; font-weight: 700;}
+  .daily .review p { font-size: 13px; color: #444; margin: 0;}
+  .daily .newsletter {
+    background: #111;
+    color: #fafaf7;
+    padding: 32px;
+    border-radius: 2px;
+  }
+  .daily .newsletter h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    margin: 0 0 12px;
+    font-weight: 800;
+  }
+  .daily .newsletter p { font-size: 14px; color: #ccc; margin: 0 0 20px; }
+  .daily .newsletter .field {
+    display: flex; border: 1px solid #444;
+  }
+  .daily .newsletter input {
+    flex: 1; background: transparent; border: none; color: #fafaf7; padding: 12px;
+    font-family: 'Inter', sans-serif; font-size: 13px;
+  }
+  .daily .newsletter input:focus { outline: none; }
+  .daily .newsletter button {
+    background: #b03a2e; color: #fafaf7; border: none; padding: 12px 18px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; cursor: pointer;
+  }
+
+  /* =========================
+     CONCEPT C — BRIEF
+     ========================= */
+  .brief {
+    background: #fff;
+    color: #111;
+    font-family: 'Inter', sans-serif;
+  }
+  .brief .top {
+    padding: 32px 6vw 16px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .brief .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 28px;
+    letter-spacing: -0.02em;
+  }
+  .brief .logo span { color: #ff5a1f; }
+  .brief .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .brief .greet {
+    padding: 48px 6vw 32px;
+    max-width: 720px;
+  }
+  .brief .greet h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(38px, 5vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    margin: 0 0 16px;
+  }
+  .brief .greet p {
+    font-size: 18px;
+    color: #444;
+    line-height: 1.55;
+  }
+  .brief .greet p strong { background: linear-gradient(transparent 60%, #ffd4b8 60%); }
+  .brief .container { max-width: 760px; padding: 0 6vw; }
+  .brief .section {
+    padding: 32px 0;
+    border-top: 2px solid #111;
+  }
+  .brief .section .label {
+    display: inline-block;
+    background: #111;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    margin-bottom: 20px;
+  }
+  .brief .section h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0 0 16px;
+  }
+  .brief .section p {
+    font-size: 17px;
+    line-height: 1.65;
+    color: #222;
+    margin: 0 0 16px;
+  }
+  .brief .section ul { padding-left: 0; list-style: none; }
+  .brief .section li {
+    padding: 12px 0 12px 32px;
+    position: relative;
+    font-size: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  .brief .section li::before {
+    content: counter(item);
+    counter-increment: item;
+    position: absolute;
+    left: 0; top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #ff5a1f;
+    font-size: 13px;
+  }
+  .brief .section ul { counter-reset: item; }
+  .brief .numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    padding: 24px 0;
+  }
+  .brief .stat .n {
+    font-family: 'Fraunces', serif;
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #111;
+  }
+  .brief .stat .n .unit { font-size: 22px; color: #ff5a1f; }
+  .brief .stat .desc {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #555;
+  }
+  .brief .quote {
+    border-left: 4px solid #ff5a1f;
+    padding: 4px 0 4px 24px;
+    margin: 24px 0;
+  }
+  .brief .quote p {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-style: italic;
+    line-height: 1.4;
+    margin: 0 0 8px;
+  }
+  .brief .quote cite {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #666;
+    font-style: normal;
+  }
+  .brief .signoff {
+    padding: 60px 6vw;
+    text-align: center;
+    border-top: 2px solid #111;
+    margin-top: 60px;
+  }
+  .brief .signoff p {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: #444;
+    margin: 0 0 24px;
+  }
+  .brief .signoff .cta {
+    display: inline-block;
+    background: #ff5a1f;
+    color: #fff;
+    padding: 14px 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* =========================
+     Recommendation
+     ========================= */
+  .rec {
+    background: linear-gradient(135deg, #0a6b4e 0%, #0a4e6b 100%);
+    color: #fff;
+    padding: 80px 8vw;
+  }
+  .rec .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #a8e6c8;
+    margin-bottom: 16px;
+  }
+  .rec h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: clamp(36px, 5vw, 56px);
+    letter-spacing: -0.02em;
+    margin: 0 0 24px;
+    max-width: 16ch;
+  }
+  .rec p { font-size: 18px; max-width: 65ch; color: #d8f0e4; line-height: 1.6; }
+  .rec .next {
+    margin-top: 32px;
+    padding: 24px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+  }
+  .rec .next h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: #a8e6c8; margin: 0 0 12px;
+  }
+  .rec .next ol { margin: 0; padding-left: 20px; }
+  .rec .next li { margin: 6px 0; font-size: 15px; }
+
+  @media (max-width: 900px) {
+    .compare, .frontier .hero, .frontier .grid, .frontier .signal,
+    .daily .feature, .daily .stories, .daily .sections, .brief .numbers { grid-template-columns: 1fr; }
+    .daily .stories { gap: 24px; }
+    .daily .head { grid-template-columns: 1fr; text-align: center; }
+    .daily .tagline { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section class="cover">
+  <div class="eyebrow">smartxchain.com / concept review / 23 may 2026</div>
+  <h1>Three directions for <em>a tech news brand</em> built on your domain.</h1>
+  <p class="lede">
+    "SmartXChain" reads naturally as <strong>smart × exchange × chain</strong> — which opens the door to three very different
+    brands. Below: a focused frontier-tech publication, a broad modern newsroom, and an opinionated daily brief.
+    Scroll through, pick the one that fits your ambition (or mix and match), and I'll spec the build.
+  </p>
+
+  <div class="compare">
+    <div class="compare-card">
+      <div class="tag">Concept A</div>
+      <h3>Frontier</h3>
+      <div class="sub">A specialist publication for Web3, AI, and emerging tech</div>
+      <ul>
+        <li>Leans hardest into the domain name</li>
+        <li>Dark, terminal-feel design</li>
+        <li>Audience: builders, investors, researchers</li>
+        <li>Differentiator: depth in a vertical</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <div class="tag">Concept B</div>
+      <h3>Daily</h3>
+      <div class="sub">A broad modern tech newsroom — Verge / Wired energy</div>
+      <ul>
+        <li>Magazine-grade editorial</li>
+        <li>Reviews + Analysis + Companies + Culture</li>
+        <li>Audience: general tech-curious</li>
+        <li>Differentiator: design + writing quality</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <div class="tag">Concept C</div>
+      <h3>Brief</h3>
+      <div class="sub">A 5-minute curated daily — Morning Brew for tech</div>
+      <ul>
+        <li>Newsletter-first, web mirror</li>
+        <li>Opinionated, voice-driven</li>
+        <li>Audience: busy professionals</li>
+        <li>Differentiator: time-respect + personality</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIVIDER A ============ -->
+<section class="divider">
+  <div class="num">Concept A — 01 / 03</div>
+  <h2>Frontier</h2>
+  <p class="pitch">A specialist publication covering the convergence of AI, blockchain, and deep tech. Reads like a Bloomberg terminal married to a long-form magazine. Targets the people who <em>build</em> the future, not the people who skim it.</p>
+  <div class="why"><strong>Why this might be right:</strong> "SmartXChain" is a perfect name for it. You start with a credible, focused identity and can broaden later. Smaller niche = faster authority.</div>
+</section>
+
+<!-- ============ MOCKUP A ============ -->
+<section class="frontier">
+  <div class="topbar">
+    <div class="logo">SMARTXCHAIN</div>
+    <div class="nav">
+      <span>Chain Watch</span><span>AI Lab</span><span>Deep Tech</span><span>Markets</span><span>Research</span>
+    </div>
+    <div>23.05.26 / NYC 14:22</div>
+  </div>
+  <div class="ticker">
+    <span><strong>BTC</strong>$94,210 +1.2%</span>
+    <span><strong>ETH</strong>$3,418 +0.8%</span>
+    <span class="down"><strong>NVDA</strong>$842 -2.1%</span>
+    <span><strong>AI-CHIP IDX</strong>+3.4%</span>
+    <span><strong>L2 TVL</strong>$38.2B</span>
+    <span class="down"><strong>SOL</strong>$182 -0.6%</span>
+  </div>
+
+  <div class="hero">
+    <div>
+      <div class="kicker">// Lead Story — Deep Tech</div>
+      <h1>Anthropic's Opus 4.7 makes a quiet claim on the agent economy</h1>
+      <p>The new long-context model is the first to ship with a workable economic primitive: persistent identity across sessions. Builders are already wiring it to onchain wallets — and that changes who actually owns an agent.</p>
+      <div class="meta">1,840 WORDS · BY R. NAKAMOTO · UPDATED 06:14 UTC</div>
+    </div>
+    <div class="sidebox">
+      <h4>Today's Signal</h4>
+      <div class="item">Coinbase quietly opens institutional staking in Europe<small>CHAIN WATCH · 2H</small></div>
+      <div class="item">Why the new EU AI Act fork is bigger than the original<small>POLICY · 4H</small></div>
+      <div class="item">Inside Worldcoin's pivot to dev infra<small>DEEP TECH · 6H</small></div>
+      <div class="item">The L2 fragmentation thesis is wrong, says Vitalik<small>OPINION · 9H</small></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="label">// Chain Watch</div>
+      <h3>Solana's first real bank run was its best stress test</h3>
+      <p>A $1.8B redemption cascade across three protocols held. Here's the post-mortem the validators don't want you to read.</p>
+      <div class="timestamp">23.05.26 · 11:02 UTC</div>
+    </div>
+    <div class="card">
+      <div class="label">// AI Lab</div>
+      <h3>The benchmark wars are over. Welcome to "evals as a service"</h3>
+      <p>Three startups are quietly pricing model behavior. The implications for procurement are larger than anyone is saying.</p>
+      <div class="timestamp">23.05.26 · 09:45 UTC</div>
+    </div>
+    <div class="card">
+      <div class="label">// Deep Tech</div>
+      <h3>Fusion's grid moment isn't 2035. It's the next 18 months.</h3>
+      <p>Helion's first PPA, the DOE's quiet rule change, and a chart that should worry every utility CFO.</p>
+      <div class="timestamp">23.05.26 · 07:18 UTC</div>
+    </div>
+  </div>
+
+  <div class="signal">
+    <div>
+      <h2>Signal of the Week</h2>
+      <p style="color:#9eb4a6; font-family:'Inter',sans-serif;">Onchain volume on intent-based DEXes hit a new ATH this week, decoupling from spot price for the first time. We track three theses on what it means.</p>
+      <div class="barchart">
+        <div style="height: 30%"></div>
+        <div style="height: 42%"></div>
+        <div style="height: 38%"></div>
+        <div style="height: 55%"></div>
+        <div style="height: 48%"></div>
+        <div style="height: 62%"></div>
+        <div style="height: 71%"></div>
+        <div style="height: 80%"></div>
+        <div style="height: 78%"></div>
+        <div style="height: 92%"></div>
+        <div style="height: 88%"></div>
+        <div style="height: 100%"></div>
+      </div>
+      <div class="legend">// WEEKLY INTENT-DEX VOLUME · 12W TRAILING</div>
+    </div>
+    <div>
+      <div class="quote">
+        "The thesis people will fight over next is whether an AI agent that holds keys is a customer, an employee, or a counterparty. The answer determines who builds the next $10B company."
+        <span class="who">— Editor's Note, 23.05.26</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIVIDER B ============ -->
+<section class="divider">
+  <div class="num">Concept B — 02 / 03</div>
+  <h2>Daily</h2>
+  <p class="pitch">A broad modern tech newsroom with magazine-quality writing and design. Covers everything from AI and devices to the people and companies shaping the industry. Aims to compete with The Verge, Wired, and Ars Technica on craft, not just speed.</p>
+  <div class="why"><strong>Why this might be right:</strong> Biggest addressable audience, easiest to grow. Domain name fades to a brand. Highest ambition but also highest production cost — needs strong writing from day one.</div>
+</section>
+
+<!-- ============ MOCKUP B ============ -->
+<section class="daily">
+  <div class="head">
+    <div class="date">Saturday — 23 May 2026 · Issue Nº 042</div>
+    <div class="masthead">SmartX<em>Chain</em></div>
+    <div class="tagline">Tech, on the record</div>
+  </div>
+  <nav class="nav">
+    <a href="#" class="active">Top Stories</a>
+    <a href="#">AI</a>
+    <a href="#">Web3</a>
+    <a href="#">Reviews</a>
+    <a href="#">Analysis</a>
+    <a href="#">Companies</a>
+    <a href="#">Culture</a>
+    <a href="#">Newsletters</a>
+    <a href="#">Podcast</a>
+  </nav>
+
+  <div class="feature">
+    <div class="hero-img"></div>
+    <div class="text">
+      <div class="kicker">The Big Read · AI</div>
+      <h1>The quiet builders inside OpenAI who don't want to ship AGI</h1>
+      <p class="dek">Six months of conversations with researchers reveal a company at war with itself — and a product strategy that's increasingly running on borrowed time.</p>
+      <div class="byline">By Maya Iyer · 14 min read · Updated 09:18 ET</div>
+    </div>
+  </div>
+
+  <div class="stories">
+    <div class="story">
+      <div class="thumb"></div>
+      <div class="cat">Devices</div>
+      <h3>The Vision Pro's second act is everything the first wasn't</h3>
+      <div class="meta">By Jordan Lee · 2h ago</div>
+    </div>
+    <div class="story">
+      <div class="thumb"></div>
+      <div class="cat">Business</div>
+      <h3>Why Nvidia just spent $14B on a company nobody had heard of</h3>
+      <div class="meta">By Priya Shah · 5h ago</div>
+    </div>
+    <div class="story">
+      <div class="thumb"></div>
+      <div class="cat">Web3</div>
+      <h3>Solana's institutional moment is here. The infra isn't ready.</h3>
+      <div class="meta">By Daniel Cruz · 7h ago</div>
+    </div>
+    <div class="story">
+      <div class="thumb"></div>
+      <div class="cat">Culture</div>
+      <h3>The vibe-coded internet is winning, and that's fine</h3>
+      <div class="meta">By Sasha Park · Yesterday</div>
+    </div>
+  </div>
+
+  <div class="sections">
+    <div>
+      <div class="colhead">Reviews this week</div>
+      <div class="review">
+        <div class="score">8.4<small>/ 10</small></div>
+        <div>
+          <h4>Framework Laptop 16 (2026 refresh)</h4>
+          <p>Still the most repairable laptop you can buy. The new GPU module finally makes it competitive on raw performance — and the price hike isn't unreasonable.</p>
+        </div>
+      </div>
+      <div class="review">
+        <div class="score">6.9<small>/ 10</small></div>
+        <div>
+          <h4>Rabbit r2</h4>
+          <p>The hardware is genuinely good this time. The software still answers a question nobody is asking. Skip unless you love beta tests.</p>
+        </div>
+      </div>
+      <div class="review">
+        <div class="score">9.1<small>/ 10</small></div>
+        <div>
+          <h4>Anthropic Claude Code (Desktop)</h4>
+          <p>The first agentic dev tool that feels native rather than bolted-on. Genuinely changes the shape of a workday.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="colhead">Newsletter</div>
+      <div class="newsletter">
+        <h4>The Chain Letter</h4>
+        <p>One smart story, three quick takes, every weekday morning. Free. 84,000 readers.</p>
+        <div class="field">
+          <input placeholder="your@email.com">
+          <button>Subscribe</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIVIDER C ============ -->
+<section class="divider">
+  <div class="num">Concept C — 03 / 03</div>
+  <h2>Brief</h2>
+  <p class="pitch">A short, opinionated daily read. Five minutes covers your tech. Conversational voice, big numbers, no fluff. The web is just a mirror of the email — newsletter is the product.</p>
+  <div class="why"><strong>Why this might be right:</strong> Cheapest to start, easiest to differentiate via voice, and newsletter economics are proven (Morning Brew, The Hustle, TLDR). Sponsorships fund growth. Limit: ceiling is lower than a full publication.</div>
+</section>
+
+<!-- ============ MOCKUP C ============ -->
+<section class="brief">
+  <div class="top">
+    <div class="logo">SmartX<span>Chain</span>.</div>
+    <div class="date">Sat · May 23 · Issue #128</div>
+  </div>
+
+  <div class="greet">
+    <h1>Morning. Nvidia just bought something weird, OpenAI is leaking, and the EU finally noticed agents.</h1>
+    <p>Here's everything that mattered in tech yesterday in <strong>under five minutes</strong>. Skip what you know, share what you didn't.</p>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <div class="label">The 5-Minute Brief</div>
+      <h2>Five things, in plain English</h2>
+      <ul>
+        <li><strong>Nvidia bought Recogni</strong> for $14B. They make custom silicon for edge AI. Translation: Jensen is hedging that not all inference lives in the data center.</li>
+        <li><strong>OpenAI is leaking researchers again.</strong> Three senior people went to a stealth startup called Stratum. The pitch deck mentions "post-RLHF alignment." Make of that what you will.</li>
+        <li><strong>The EU's AI Act got an "agent" amendment.</strong> If your agent moves money or takes irreversible actions, you now need a human-in-loop disclosure. Coming Q3 2026.</li>
+        <li><strong>Solana ETF approval is now "weeks away,"</strong> per three sources at Bitwise. SOL up 11% on the rumor. We've seen this movie.</li>
+        <li><strong>Framework shipped a desktop.</strong> Modular, repairable, and 40% cheaper than equivalent prebuilts. We'll have a review Tuesday.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="label">Today's Big Idea</div>
+      <h2>The agent economy needs a unit of account that isn't the dollar</h2>
+      <p>Every "agent commerce" demo so far treats the agent like a buyer with a credit card. That doesn't scale — buyers settle in seconds, agents need to settle in milliseconds, and credit card rails can't do either.</p>
+      <p>The interesting bet right now: stablecoin rails + intent-based execution. If you want to know why Stripe just acquired Bridge for $1.1B, that's why. The next 18 months get fun.</p>
+      <div class="quote">
+        <p>"The first $100B company built on agent commerce will look more like a payments network than a model lab."</p>
+        <cite>— Our editor, probably wrong but loud about it</cite>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="label">Numbers That Matter</div>
+      <h2>Three numbers to know</h2>
+      <div class="numbers">
+        <div class="stat">
+          <div class="n">$38<span class="unit">B</span></div>
+          <div class="desc">Total value locked across all L2s. New ATH this week. Up 18% in 30 days.</div>
+        </div>
+        <div class="stat">
+          <div class="n">71<span class="unit">%</span></div>
+          <div class="desc">Of S&P 500 earnings calls this quarter mentioned "AI agents." Up from 12% in Q1 2025.</div>
+        </div>
+        <div class="stat">
+          <div class="n">3.2<span class="unit">M</span></div>
+          <div class="desc">Daily active developers on AI-assisted coding tools. Doubled in 9 months.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="label">One Tool, One Link</div>
+      <h2>Worth your tab today</h2>
+      <p><strong>shadcn/ui v3</strong> shipped this week. The big change: registries. You can now host your own component library and other devs can pull from it with one CLI command. Quietly the most important DX change of the year.</p>
+    </div>
+  </div>
+
+  <div class="signoff">
+    <p>That's it. Forward this to one friend who'll find it useful — that's literally how we grow.</p>
+    <a href="#" class="cta">Subscribe Free →</a>
+  </div>
+</section>
+
+<!-- ============ RECOMMENDATION ============ -->
+<section class="rec">
+  <div class="eyebrow">My recommendation</div>
+  <h2>Start with Brief. Earn the right to become Daily. Spin out Frontier as a vertical.</h2>
+  <p>
+    A daily newsletter (Concept C) is the cheapest and fastest way to build a real audience and prove
+    your voice — and the domain works perfectly as a brand name. Once you have 5–10K engaged subscribers,
+    layer in long-form web content (Concept B's strengths). If a particular vertical (AI agents, Web3
+    infra, deep tech) keeps outperforming, spin it out as a paid "Frontier" tier — that's where the
+    domain name <em>really</em> pays off.
+  </p>
+
+  <div class="next">
+    <h4>If you like this plan, the next steps are:</h4>
+    <ol>
+      <li>Pick a concept (or a hybrid like the staged plan above)</li>
+      <li>Decide editorial angle: AI-heavy, Web3-heavy, balanced, or other</li>
+      <li>Decide build approach: static site (Astro/Hugo), CMS-backed (Ghost, WordPress), or custom</li>
+      <li>I'll write a full spec and implementation plan based on those answers</li>
+    </ol>
+  </div>
+</section>
+
+</body>
+</html>

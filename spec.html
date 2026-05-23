@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartXChain — Spec & Implementation Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600;9..144,800;9..144,900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    margin: 0;
+    background: #0a0e0c;
+    color: #d8e6dc;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: #4ade80; text-decoration: none; border-bottom: 1px dashed transparent; }
+  a:hover { border-bottom-color: #4ade80; }
+  strong { color: #fff; }
+  em { color: #a8e6c8; font-style: normal; }
+  code, pre, .mono {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ============ TOP BAR ============ */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,14,12,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #1c2620;
+    padding: 14px 6vw;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6a8a7a;
+  }
+  .topbar .logo { color: #4ade80; font-weight: 700; letter-spacing: 0.2em; }
+  .topbar .logo::before { content: "▲ "; }
+  .topbar nav a { margin-left: 20px; color: #6a8a7a; border: none; }
+  .topbar nav a:hover { color: #4ade80; }
+
+  /* ============ HERO ============ */
+  .hero {
+    padding: 100px 6vw 80px;
+    border-bottom: 1px solid #1c2620;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .hero .kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    color: #4ade80;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    color: #fff;
+    font-size: clamp(44px, 6vw, 80px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    margin: 0 0 24px;
+    max-width: 18ch;
+  }
+  .hero p.lede {
+    font-size: 19px;
+    color: #b8c8be;
+    max-width: 65ch;
+    margin: 0;
+  }
+  .hero .meta {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    border-top: 1px solid #1c2620;
+    padding-top: 24px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #6a8a7a;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .hero .meta strong { color: #fff; display: block; margin-top: 6px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px; letter-spacing: normal; text-transform: none; }
+
+  /* ============ SECTION ============ */
+  section.s {
+    padding: 80px 6vw;
+    border-bottom: 1px solid #1c2620;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  section.s .num {
+    font-family: 'IBM Plex Mono', monospace;
+    color: #4ade80;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  section.s h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    color: #fff;
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 32px;
+    max-width: 20ch;
+  }
+  section.s h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    color: #fff;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+    margin: 32px 0 12px;
+  }
+  section.s h4 {
+    color: #4ade80;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: 24px 0 8px;
+  }
+  section.s p { margin: 0 0 16px; max-width: 75ch; }
+  section.s ul, section.s ol { max-width: 75ch; padding-left: 22px; }
+  section.s li { margin: 6px 0; }
+
+  /* ============ CALLOUT ============ */
+  .callout {
+    border-left: 3px solid #4ade80;
+    background: rgba(74, 222, 128, 0.05);
+    padding: 20px 24px;
+    margin: 24px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .callout .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #4ade80;
+    margin-bottom: 8px;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: #fbbf24; background: rgba(251, 191, 36, 0.05); }
+  .callout.warn .label { color: #fbbf24; }
+
+  /* ============ CARDS ============ */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 24px 0;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 24px 0;
+  }
+  .card {
+    border: 1px solid #1c2620;
+    padding: 24px;
+    background: #0d1411;
+    border-radius: 2px;
+  }
+  .card h4 { margin-top: 0; }
+  .card p { font-size: 14px; color: #b8c8be; }
+  .card.highlight {
+    border-color: #4ade80;
+    background: rgba(74, 222, 128, 0.05);
+  }
+
+  /* ============ CODE BLOCKS ============ */
+  pre {
+    background: #050807;
+    border: 1px solid #1c2620;
+    border-left: 3px solid #4ade80;
+    padding: 20px 24px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #d8e6dc;
+    border-radius: 2px;
+    margin: 20px 0;
+  }
+  pre .key { color: #4ade80; }
+  pre .str { color: #fbbf24; }
+  pre .com { color: #6a8a7a; font-style: italic; }
+  code.inline {
+    background: #1c2620;
+    color: #4ade80;
+    padding: 2px 7px;
+    border-radius: 2px;
+    font-size: 0.92em;
+  }
+
+  /* ============ TABLE ============ */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid #1c2620;
+    vertical-align: top;
+  }
+  th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #4ade80;
+    background: #0d1411;
+    font-weight: 500;
+  }
+  td strong { color: #fff; }
+
+  /* ============ DIAGRAM ============ */
+  .diagram {
+    background: #050807;
+    border: 1px solid #1c2620;
+    padding: 32px;
+    margin: 24px 0;
+    border-radius: 2px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    overflow-x: auto;
+  }
+  .diagram svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+
+  /* ============ PHASES ============ */
+  .phase {
+    border-left: 2px solid #1c2620;
+    padding: 20px 0 20px 28px;
+    margin: 0;
+    position: relative;
+  }
+  .phase::before {
+    content: "";
+    position: absolute;
+    left: -7px; top: 28px;
+    width: 12px; height: 12px;
+    background: #4ade80;
+    border-radius: 50%;
+  }
+  .phase + .phase { margin-top: -1px; }
+  .phase .head {
+    display: flex; align-items: baseline; gap: 16px;
+    margin-bottom: 8px;
+  }
+  .phase .pnum {
+    font-family: 'IBM Plex Mono', monospace;
+    color: #4ade80;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .phase h3 {
+    margin: 0;
+    font-family: 'Fraunces', serif;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .phase .est {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #6a8a7a;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+  .phase p { color: #b8c8be; font-size: 14px; }
+  .phase ul { font-size: 14px; color: #b8c8be; }
+  .phase code.inline { font-size: 0.88em; }
+
+  /* ============ CHECKLIST ============ */
+  .check {
+    list-style: none; padding: 0; margin: 16px 0;
+  }
+  .check li {
+    padding: 10px 0 10px 28px;
+    position: relative;
+    border-bottom: 1px dashed #1c2620;
+    color: #d8e6dc;
+  }
+  .check li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 14px;
+    width: 14px; height: 14px;
+    border: 1px solid #4ade80;
+    border-radius: 2px;
+  }
+  .check li strong { color: #fff; }
+
+  /* ============ COST TABLE ============ */
+  .cost {
+    border: 1px solid #1c2620;
+    background: #0d1411;
+    padding: 0;
+    margin: 24px 0;
+    border-radius: 2px;
+  }
+  .cost .row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    padding: 14px 20px;
+    border-bottom: 1px solid #1c2620;
+    align-items: center;
+    font-size: 14px;
+  }
+  .cost .row:last-child { border-bottom: none; }
+  .cost .row.head {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #4ade80;
+    background: #1c2620;
+  }
+  .cost .row.total {
+    background: rgba(74,222,128,0.08);
+    color: #fff;
+    font-weight: 600;
+  }
+  .cost .price { font-family: 'IBM Plex Mono', monospace; color: #4ade80; }
+
+  /* ============ Q&A ============ */
+  .qa {
+    padding: 24px;
+    border: 1px solid #1c2620;
+    background: #0d1411;
+    border-radius: 2px;
+    margin: 16px 0;
+  }
+  .qa .q {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    color: #fff;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+  .qa .a { color: #b8c8be; font-size: 15px; margin: 0; }
+  .qa .a strong { color: #4ade80; }
+
+  /* ============ APPROVAL ============ */
+  .approval {
+    background: linear-gradient(135deg, rgba(74,222,128,0.15) 0%, rgba(74,222,128,0.05) 100%);
+    border: 1px solid #4ade80;
+    padding: 40px;
+    border-radius: 4px;
+    margin: 40px 0 0;
+  }
+  .approval h3 {
+    margin-top: 0;
+    color: #4ade80 !important;
+  }
+
+  @media (max-width: 900px) {
+    .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    .hero .meta { grid-template-columns: 1fr 1fr; }
+    .topbar nav { display: none; }
+    .cost .row { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<div class="topbar">
+  <div class="logo">SMARTXCHAIN / SPEC</div>
+  <nav>
+    <a href="#summary">Summary</a>
+    <a href="#arch">Architecture</a>
+    <a href="#storage">Storage</a>
+    <a href="#dns">DNS</a>
+    <a href="#plan">Plan</a>
+    <a href="#cost">Cost</a>
+    <a href="#decisions">Decisions</a>
+  </nav>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="summary">
+  <div class="kicker">// SPEC v0.1 — 23.05.2026 — FOR REVIEW</div>
+  <h1>Frontier: a specialist publication for the smart-contract era.</h1>
+  <p class="lede">
+    A statically-generated, edge-served news site for Web3, AI, and deep tech. Markdown content lives in
+    a Git repo; the site builds to static HTML and ships to Cloudflare's global edge. <strong>No database
+    needed for v1.</strong> Total runtime cost: under $10/month.
+  </p>
+  <div class="meta">
+    <div>// STACK<strong>Astro + MDX + Tailwind</strong></div>
+    <div>// HOST<strong>Cloudflare Pages</strong></div>
+    <div>// DOMAIN<strong>smartxchain.com (Route 53)</strong></div>
+    <div>// TIMELINE<strong>~3 weeks to launch</strong></div>
+  </div>
+</section>
+
+<!-- ============ 01 CONCEPT RECAP ============ -->
+<section class="s">
+  <div class="num">// 01 — CONCEPT RECAP</div>
+  <h2>What we're building, in one paragraph.</h2>
+  <p>
+    <strong>SmartXChain — Frontier</strong> is a specialist tech publication covering the convergence of
+    blockchain, AI, and emerging deep tech. The voice is analytical and dense, written for builders,
+    investors, and researchers — not skimmers. The visual identity is a dark, monospace-accented
+    "terminal" feel: signal over noise, data on display, calm authority over breathless hype.
+  </p>
+
+  <h3>Editorial structure</h3>
+  <p>Six core sections — each becomes a category page, a feed in the homepage signal sidebar, and a tag namespace.</p>
+  <table>
+    <thead><tr><th>Section</th><th>Slug</th><th>Covers</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Chain Watch</strong></td><td><code class="inline">/chain-watch</code></td><td>L1/L2 protocols, onchain flows, regulatory news</td></tr>
+      <tr><td><strong>AI Lab</strong></td><td><code class="inline">/ai-lab</code></td><td>Frontier models, agents, benchmarks, alignment</td></tr>
+      <tr><td><strong>Deep Tech</strong></td><td><code class="inline">/deep-tech</code></td><td>Fusion, quantum, biotech, robotics, hard tech</td></tr>
+      <tr><td><strong>Markets</strong></td><td><code class="inline">/markets</code></td><td>Funding, M&amp;A, public-market signal</td></tr>
+      <tr><td><strong>Research</strong></td><td><code class="inline">/research</code></td><td>Long-form deep dives and original analysis</td></tr>
+      <tr><td><strong>Opinion</strong></td><td><code class="inline">/opinion</code></td><td>Editor's note, guest essays, hot takes</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Working tagline (proposed)</h3>
+  <p style="font-family:'Fraunces',serif;font-size:24px;font-style:italic;color:#fff;">"Signal from the frontier."</p>
+  <p style="color:#6a8a7a;font-size:14px;">Alternatives: "Where the next stack ships." · "The smart-contract era, decoded." · You decide.</p>
+</section>
+
+<!-- ============ 02 ARCHITECTURE ============ -->
+<section class="s" id="arch">
+  <div class="num">// 02 — ARCHITECTURE</div>
+  <h2>One static build, served from 300+ edge cities.</h2>
+  <p>
+    Every part of the site is built ahead of time — homepage, category pages, every post, the search index,
+    even the RSS feed and sitemap. Cloudflare Pages stores the output, replicates it to Cloudflare's edge
+    network, and serves it from the closest data center to each reader. There's no server you maintain.
+  </p>
+
+  <div class="diagram">
+<svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .box { fill:#0d1411; stroke:#1c2620; stroke-width:1.5; }
+      .box-hot { fill:rgba(74,222,128,0.08); stroke:#4ade80; stroke-width:1.5; }
+      .lbl { font-family:'IBM Plex Mono',monospace; font-size:12px; fill:#d8e6dc; text-anchor:middle; }
+      .lbl-sm { font-family:'IBM Plex Mono',monospace; font-size:10px; fill:#6a8a7a; text-anchor:middle; letter-spacing:0.1em; }
+      .lbl-hot { fill:#4ade80; font-weight:600; }
+      .arrow { stroke:#4ade80; stroke-width:1.5; fill:none; marker-end:url(#ah); }
+      .arrow-dash { stroke:#6a8a7a; stroke-width:1.2; fill:none; stroke-dasharray:4 4; marker-end:url(#ah-grey); }
+    </style>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4ade80"/>
+    </marker>
+    <marker id="ah-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6a8a7a"/>
+    </marker>
+  </defs>
+
+  <!-- Author -->
+  <rect class="box" x="30" y="30" width="160" height="60" rx="2"/>
+  <text class="lbl-sm" x="110" y="50">// AUTHOR</text>
+  <text class="lbl" x="110" y="72">You + future writers</text>
+
+  <!-- GitHub -->
+  <rect class="box" x="260" y="30" width="160" height="60" rx="2"/>
+  <text class="lbl-sm" x="340" y="50">// SOURCE</text>
+  <text class="lbl" x="340" y="72">GitHub Repo</text>
+
+  <!-- CF Pages Build -->
+  <rect class="box-hot" x="490" y="30" width="180" height="60" rx="2"/>
+  <text class="lbl-sm lbl-hot" x="580" y="50">// BUILD</text>
+  <text class="lbl lbl-hot" x="580" y="72">Cloudflare Pages</text>
+
+  <!-- Edge CDN -->
+  <rect class="box-hot" x="730" y="30" width="140" height="60" rx="2"/>
+  <text class="lbl-sm lbl-hot" x="800" y="50">// SERVE</text>
+  <text class="lbl lbl-hot" x="800" y="72">Edge CDN (300+)</text>
+
+  <!-- Reader -->
+  <rect class="box" x="730" y="200" width="140" height="60" rx="2"/>
+  <text class="lbl-sm" x="800" y="220">// READER</text>
+  <text class="lbl" x="800" y="242">Browser</text>
+
+  <!-- Static artifacts -->
+  <rect class="box" x="380" y="160" width="280" height="120" rx="2"/>
+  <text class="lbl-sm" x="520" y="180">// STATIC OUTPUT</text>
+  <text class="lbl" x="520" y="205">HTML pages · /archive · /posts/[slug]</text>
+  <text class="lbl" x="520" y="225">Pagefind search index</text>
+  <text class="lbl" x="520" y="245">RSS · sitemap · OG images</text>
+  <text class="lbl" x="520" y="265">Optimized images (Astro Image)</text>
+
+  <!-- Client-side APIs -->
+  <rect class="box" x="30" y="320" width="180" height="60" rx="2"/>
+  <text class="lbl-sm" x="120" y="340">// CLIENT FETCH</text>
+  <text class="lbl" x="120" y="362">CoinGecko (ticker)</text>
+
+  <rect class="box" x="260" y="320" width="180" height="60" rx="2"/>
+  <text class="lbl-sm" x="350" y="340">// CLIENT FETCH</text>
+  <text class="lbl" x="350" y="362">Buttondown (newsletter)</text>
+
+  <rect class="box" x="490" y="320" width="180" height="60" rx="2"/>
+  <text class="lbl-sm" x="580" y="340">// CLIENT BEACON</text>
+  <text class="lbl" x="580" y="362">CF Web Analytics</text>
+
+  <!-- Arrows: build pipeline -->
+  <path class="arrow" d="M190,60 L260,60"/>
+  <path class="arrow" d="M420,60 L490,60"/>
+  <path class="arrow" d="M670,60 L730,60"/>
+  <text class="lbl-sm" x="225" y="48">push</text>
+  <text class="lbl-sm" x="455" y="48">build</text>
+  <text class="lbl-sm" x="700" y="48">deploy</text>
+
+  <!-- Edge to reader -->
+  <path class="arrow" d="M800,90 L800,200"/>
+  <text class="lbl-sm" x="830" y="150">serve</text>
+
+  <!-- Build → static output -->
+  <path class="arrow-dash" d="M580,90 L520,160"/>
+  <text class="lbl-sm" x="580" y="125">produces</text>
+
+  <!-- Reader → 3rd party services -->
+  <path class="arrow-dash" d="M730,230 L210,350"/>
+  <path class="arrow-dash" d="M730,235 L440,350"/>
+  <path class="arrow-dash" d="M740,240 L670,340"/>
+
+  <text class="lbl-sm" x="450" y="455">// runtime data flow is browser → external services. No backend to maintain.</text>
+</svg>
+  </div>
+
+  <h3>What this gets you</h3>
+  <ul>
+    <li><strong>No servers to babysit.</strong> Cloudflare Pages handles build, hosting, and SSL automatically.</li>
+    <li><strong>Free CDN globally.</strong> Pages serves from the same edge network as Cloudflare's enterprise customers.</li>
+    <li><strong>Preview deploys on every PR.</strong> You can review changes on a live URL before merging to <code class="inline">main</code>.</li>
+    <li><strong>Rollback in one click.</strong> Every deploy is preserved; revert from the Pages dashboard.</li>
+    <li><strong>Performance budget basically solved.</strong> Static HTML + edge caching = sub-200ms TTFB anywhere.</li>
+  </ul>
+</section>
+
+<!-- ============ 03 TECH STACK ============ -->
+<section class="s">
+  <div class="num">// 03 — TECH STACK</div>
+  <h2>Boring tech, in the best way.</h2>
+  <p>Every choice below is optimized for: solo author velocity, low cost, and the lowest possible number of moving parts.</p>
+
+  <div class="grid-2">
+    <div class="card highlight">
+      <h4>// Framework</h4>
+      <h3 style="font-family:'Fraunces',serif;color:#fff;margin:8px 0 12px;font-size:22px;">Astro</h3>
+      <p>Static site generator built for content sites. Ships zero JS by default. First-class MDX support. Battle-tested on Cloudflare Pages. Better Lighthouse scores than Next.js for this use case.</p>
+    </div>
+    <div class="card">
+      <h4>// Styling</h4>
+      <h3 style="font-family:'Fraunces',serif;color:#fff;margin:8px 0 12px;font-size:22px;">Tailwind CSS</h3>
+      <p>Utility-first CSS. Keeps stylesheet under 10KB after purge. Easy to maintain the Frontier dark theme as design tokens.</p>
+    </div>
+    <div class="card">
+      <h4>// Content</h4>
+      <h3 style="font-family:'Fraunces',serif;color:#fff;margin:8px 0 12px;font-size:22px;">MDX in Git</h3>
+      <p>Markdown + React/Astro components. Means charts, callouts, and tickers can be embedded directly inside an article. No CMS lock-in.</p>
+    </div>
+    <div class="card">
+      <h4>// Search</h4>
+      <h3 style="font-family:'Fraunces',serif;color:#fff;margin:8px 0 12px;font-size:22px;">Pagefind</h3>
+      <p>Static search index built at deploy time, queried entirely in the browser. Zero server cost. Works perfectly with archives.</p>
+    </div>
+    <div class="card">
+      <h4>// Newsletter</h4>
+      <h3 style="font-family:'Fraunces',serif;color:#fff;margin:8px 0 12px;font-size:22px;">Buttondown</h3>
+      <p>Indie-built, generous free tier (100 subs), great deliverability, simple API. Beehiiv is a strong alternative if you want their growth tools.</p>
+    </div>
+    <div class="card">
+      <h4>// Analytics</h4>
+      <h3 style="font-family:'Fraunces',serif;color:#fff;margin:8px 0 12px;font-size:22px;">Cloudflare Web Analytics</h3>
+      <p>Privacy-friendly, cookie-less, free, native. No GDPR banner needed.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="label">// Why not Next.js / WordPress / Substack?</div>
+    <p><strong>Next.js</strong> on Cloudflare is doable but adds complexity (SSR, middleware) we don't need for a content site. <strong>WordPress</strong> requires a server, a database, and constant patching. <strong>Substack</strong> doesn't own the domain experience — you'd be a tenant, not an owner.</p>
+  </div>
+</section>
+
+<!-- ============ 04 STORAGE Q&A ============ -->
+<section class="s" id="storage">
+  <div class="num">// 04 — STORAGE</div>
+  <h2>Do you need a database?</h2>
+
+  <div class="callout">
+    <div class="label">// SHORT ANSWER</div>
+    <p>No — not for v1. Every piece of content lives as a Markdown file in your Git repo and gets baked into static HTML at build time. Archives, categories, tags, search — all derived from those files.</p>
+  </div>
+
+  <h3>Long answer: where each kind of data lives</h3>
+  <table>
+    <thead><tr><th>Data</th><th>Where it lives</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Articles</strong></td>
+        <td>Markdown files in Git: <code class="inline">src/content/posts/*.mdx</code></td>
+        <td>Version-controlled, diffable, no DB to back up, full ownership</td>
+      </tr>
+      <tr>
+        <td><strong>Categories &amp; tags</strong></td>
+        <td>Frontmatter on each post</td>
+        <td>Derived at build time into category/tag pages</td>
+      </tr>
+      <tr>
+        <td><strong>Author bios</strong></td>
+        <td>Markdown: <code class="inline">src/content/authors/*.md</code></td>
+        <td>Reusable across posts via slug reference</td>
+      </tr>
+      <tr>
+        <td><strong>Archive index</strong></td>
+        <td>Generated at build time from posts collection</td>
+        <td>Just an HTML page; pagination handled by Astro</td>
+      </tr>
+      <tr>
+        <td><strong>Search index</strong></td>
+        <td>Built by Pagefind at deploy time, shipped as static JSON chunks</td>
+        <td>Searched in-browser, zero server cost</td>
+      </tr>
+      <tr>
+        <td><strong>Live ticker (BTC/ETH/etc.)</strong></td>
+        <td>Fetched client-side from CoinGecko's free API</td>
+        <td>No need to store; refresh every 60s in browser</td>
+      </tr>
+      <tr>
+        <td><strong>Newsletter subscribers</strong></td>
+        <td>Buttondown's database (or your provider)</td>
+        <td>You don't want to handle compliance + deliverability yourself</td>
+      </tr>
+      <tr>
+        <td><strong>Analytics</strong></td>
+        <td>Cloudflare Web Analytics</td>
+        <td>Aggregated, privacy-friendly, free</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>When you'd actually need a database</h3>
+  <p>If/when any of these become priorities, we add <strong>Cloudflare D1</strong> (SQLite at the edge — free tier covers 5M reads/month):</p>
+  <ul>
+    <li><strong>User accounts</strong> for paid/gated content</li>
+    <li><strong>Comments</strong> you want to host yourself (otherwise use <a href="#">Cusdis</a> or <a href="#">Giscus</a>)</li>
+    <li><strong>Saved articles / bookmarks</strong> per reader</li>
+    <li><strong>Tip jar / paywall</strong> with subscription state</li>
+  </ul>
+
+  <div class="callout warn">
+    <div class="label">// RECOMMENDATION</div>
+    <p>Ship v1 with no database. Re-evaluate after you have 1,000 newsletter subscribers and know which "paid" features people actually want. Premature databases are how solo media projects die.</p>
+  </div>
+</section>
+
+<!-- ============ 05 CONTENT MODEL ============ -->
+<section class="s">
+  <div class="num">// 05 — CONTENT MODEL</div>
+  <h2>Every article is just a file.</h2>
+  <p>Posts go in <code class="inline">src/content/posts/</code>, named <code class="inline">YYYY-MM-DD-slug.mdx</code>. Each post has typed frontmatter — Astro will yell at build time if you forget a field.</p>
+
+  <h3>Example post</h3>
+<pre><span class="com">// src/content/posts/2026-05-23-anthropic-opus-4-7.mdx</span>
+<span class="key">---</span>
+<span class="key">title:</span> <span class="str">"Anthropic's Opus 4.7 makes a quiet claim on the agent economy"</span>
+<span class="key">slug:</span> <span class="str">"opus-4-7-agent-economy"</span>
+<span class="key">date:</span> <span class="str">2026-05-23</span>
+<span class="key">updatedAt:</span> <span class="str">2026-05-23T06:14:00Z</span>
+<span class="key">author:</span> <span class="str">r-nakamoto</span>
+<span class="key">category:</span> <span class="str">ai-lab</span>
+<span class="key">tags:</span> [<span class="str">"anthropic"</span>, <span class="str">"agents"</span>, <span class="str">"long-context"</span>]
+<span class="key">excerpt:</span> <span class="str">"Long-context isn't the headline. Persistent identity is."</span>
+<span class="key">hero:</span> <span class="str">./hero.jpg</span>
+<span class="key">featured:</span> <span class="key">true</span>
+<span class="key">---</span>
+
+The new long-context model is the first to ship with a workable economic
+primitive: persistent identity across sessions...
+
+<span class="com">&lt;Ticker symbols={["BTC","ETH","NVDA"]} /&gt;</span>
+</pre>
+
+  <h3>Typed schema (Astro content collections)</h3>
+<pre><span class="com">// src/content/config.ts</span>
+<span class="key">import</span> { defineCollection, z } <span class="key">from</span> <span class="str">'astro:content'</span>;
+
+<span class="key">const</span> posts = defineCollection({
+  type: <span class="str">'content'</span>,
+  schema: ({ image }) => z.object({
+    title:     z.string().max(120),
+    slug:      z.string(),
+    date:      z.date(),
+    updatedAt: z.date().optional(),
+    author:    z.string(),  <span class="com">// references authors collection</span>
+    category:  z.enum([<span class="str">'chain-watch'</span>,<span class="str">'ai-lab'</span>,<span class="str">'deep-tech'</span>,<span class="str">'markets'</span>,<span class="str">'research'</span>,<span class="str">'opinion'</span>]),
+    tags:      z.array(z.string()).default([]),
+    excerpt:   z.string().max(280),
+    hero:      image().optional(),
+    featured:  z.boolean().default(false),
+    draft:     z.boolean().default(false),
+  }),
+});
+
+<span class="key">export const</span> collections = { posts };
+</pre>
+</section>
+
+<!-- ============ 06 SITEMAP ============ -->
+<section class="s">
+  <div class="num">// 06 — SITEMAP</div>
+  <h2>Every page the site will have.</h2>
+
+  <table>
+    <thead><tr><th>Route</th><th>Purpose</th><th>Generated from</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">/</code></td><td>Homepage — featured lead, signal sidebar, category grid, signal-of-the-week</td><td>Latest posts + featured flag</td></tr>
+      <tr><td><code class="inline">/chain-watch</code> ... <code class="inline">/opinion</code></td><td>Category index, paginated (20/page)</td><td>Posts filtered by <code class="inline">category</code></td></tr>
+      <tr><td><code class="inline">/posts/[slug]</code></td><td>Article page</td><td>One per post</td></tr>
+      <tr><td><code class="inline">/archive</code></td><td>Full archive — paginated, filterable by category/year, searchable</td><td>All posts, reverse chronological</td></tr>
+      <tr><td><code class="inline">/tags/[tag]</code></td><td>Tag pages</td><td>Posts filtered by tag</td></tr>
+      <tr><td><code class="inline">/authors/[slug]</code></td><td>Author bio + their posts</td><td>Authors collection</td></tr>
+      <tr><td><code class="inline">/search</code></td><td>Search UI powered by Pagefind</td><td>Static page + JS index</td></tr>
+      <tr><td><code class="inline">/newsletter</code></td><td>"Subscribe to the Chain Letter" landing</td><td>Static</td></tr>
+      <tr><td><code class="inline">/about</code>, <code class="inline">/contact</code>, <code class="inline">/privacy</code></td><td>Standard pages</td><td>Static markdown</td></tr>
+      <tr><td><code class="inline">/rss.xml</code></td><td>RSS feed</td><td>Auto-generated by <code class="inline">@astrojs/rss</code></td></tr>
+      <tr><td><code class="inline">/sitemap-index.xml</code></td><td>Sitemap for search engines</td><td>Auto-generated by <code class="inline">@astrojs/sitemap</code></td></tr>
+      <tr><td><code class="inline">/og/[slug].png</code></td><td>Per-post social share image</td><td>Generated at build via Satori</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 07 ARCHIVE ============ -->
+<section class="s">
+  <div class="num">// 07 — ARCHIVE</div>
+  <h2>The archive, as you asked for it.</h2>
+  <p>You specifically called out wanting archives. Here's exactly how that works:</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>// LAYOUT</h4>
+      <p>Reverse-chronological list of every article ever published. 20 per page. Each row shows: date, category, headline, author, read time. Compact, dense, Bloomberg-feel.</p>
+    </div>
+    <div class="card">
+      <h4>// FILTERS</h4>
+      <p>Filter chips at top: <em>All</em> · <em>Chain Watch</em> · <em>AI Lab</em> · <em>Deep Tech</em> · <em>Markets</em> · <em>Research</em> · <em>Opinion</em>. Separate year filter (2026, 2027, ...). Filters update URL so links are shareable.</p>
+    </div>
+    <div class="card">
+      <h4>// SEARCH</h4>
+      <p>Full-text search powered by Pagefind. Built at deploy time, runs in the browser. Returns results in &lt;50ms even for 10K+ posts. No server, no cost.</p>
+    </div>
+    <div class="card">
+      <h4>// PAGINATION</h4>
+      <p>Astro generates a static page for each batch: <code class="inline">/archive/1</code>, <code class="inline">/archive/2</code>, etc. Good for SEO. Optional progressive enhancement to infinite-scroll later.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="label">// SCALABILITY</div>
+    <p>At 1 post/day for 10 years = 3,650 posts. That's roughly 6MB of HTML and a 2MB search index. Cloudflare Pages free tier handles this without breaking a sweat. We're a long way from needing pagination strategies.</p>
+  </div>
+</section>
+
+<!-- ============ 08 DNS ============ -->
+<section class="s" id="dns">
+  <div class="num">// 08 — DNS — ROUTE 53 → CLOUDFLARE</div>
+  <h2>Three options. Here's the right one.</h2>
+
+  <p>Your domain is registered at AWS Route 53 and you want hosting on Cloudflare. There are three ways to wire that up:</p>
+
+  <div class="grid-3">
+    <div class="card">
+      <h4>// OPTION A</h4>
+      <h3 style="font-family:'Fraunces',serif;color:#fff;margin:8px 0 12px;font-size:20px;">Keep R53 nameservers, point records at Pages</h3>
+      <p>Add CNAME/A records in Route 53 that target Cloudflare Pages. Works, but you lose Cloudflare's DNS, proxying, WAF, and apex-domain handling gets clunky.</p>
+      <p style="color:#fbbf24;font-size:13px;"><strong>Not recommended.</strong></p>
+    </div>
+    <div class="card highlight">
+      <h4>// OPTION B — RECOMMENDED</h4>
+      <h3 style="font-family:'Fraunces',serif;color:#fff;margin:8px 0 12px;font-size:20px;">Move nameservers to Cloudflare, keep registrar at AWS</h3>
+      <p>Domain stays registered/renewed at AWS. DNS is managed by Cloudflare. You get the full Cloudflare stack (DNS, WAF, Workers, R2, analytics) for free. Zero ongoing cost beyond the AWS renewal.</p>
+      <p style="color:#4ade80;font-size:13px;"><strong>What we'll do.</strong></p>
+    </div>
+    <div class="card">
+      <h4>// OPTION C</h4>
+      <h3 style="font-family:'Fraunces',serif;color:#fff;margin:8px 0 12px;font-size:20px;">Transfer registrar to Cloudflare</h3>
+      <p>Cloudflare offers at-cost registrar pricing (~$10/yr for .com vs ~$15 at AWS). Saves a few dollars a year. Optional, can do later, requires a 60-day wait after initial registration.</p>
+      <p style="color:#6a8a7a;font-size:13px;"><strong>Defer until renewal.</strong></p>
+    </div>
+  </div>
+
+  <h3>Option B — the exact steps</h3>
+  <ol>
+    <li>Sign up for a free Cloudflare account at <code class="inline">cloudflare.com</code></li>
+    <li>Click <em>Add a Site</em> → enter <code class="inline">smartxchain.com</code> → choose the <strong>Free</strong> plan</li>
+    <li>Cloudflare auto-scans existing DNS records from Route 53. Review them, keep what you want, delete the rest. (You probably have nothing other than what Route 53 added by default — safe to clear.)</li>
+    <li>Cloudflare gives you two nameservers, e.g. <code class="inline">elliot.ns.cloudflare.com</code> and <code class="inline">tina.ns.cloudflare.com</code>.</li>
+    <li>In AWS Console → Route 53 → <em>Registered domains</em> → <code class="inline">smartxchain.com</code> → <em>Edit name servers</em> → replace AWS's four nameservers with Cloudflare's two.</li>
+    <li>Wait. Propagation typically takes 1–4 hours, max 24h. Cloudflare emails you when it's active.</li>
+    <li>Once active, delete the (now-unused) Route 53 Hosted Zone for <code class="inline">smartxchain.com</code> to stop the ~$0.50/month charge.</li>
+  </ol>
+
+  <h3>Then hooking up the site</h3>
+  <ol>
+    <li>In Cloudflare Pages, connect to the GitHub repo. First deploy goes to <code class="inline">smartxchain.pages.dev</code>.</li>
+    <li>In Pages → <em>Custom domains</em> → add <code class="inline">smartxchain.com</code> and <code class="inline">www.smartxchain.com</code>.</li>
+    <li>Cloudflare auto-creates the DNS records (CNAME flattening on the apex). SSL is automatic.</li>
+    <li>Set up a redirect rule: <code class="inline">www → apex</code> (or the inverse — your call; <em>apex</em> is more common now).</li>
+  </ol>
+
+  <div class="callout warn">
+    <div class="label">// SAFETY NOTE</div>
+    <p>Before changing nameservers, make a list of any current DNS records on Route 53 (especially any email MX records). If <code class="inline">@smartxchain.com</code> email is forwarding somewhere — like the address that received your account confirmation — those MX records need to be recreated in Cloudflare DNS, or email will stop working at cutover.</p>
+  </div>
+</section>
+
+<!-- ============ 09 IMPLEMENTATION PLAN ============ -->
+<section class="s" id="plan">
+  <div class="num">// 09 — IMPLEMENTATION PLAN</div>
+  <h2>Phased build. ~3 weeks solo, faster if I'm doing it.</h2>
+  <p>Each phase is independently shippable. We commit at the end of each phase and you can review the deployed result before we move on.</p>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 0</span>
+      <h3>Tooling &amp; first deploy</h3>
+      <span class="est">~2 hours</span>
+    </div>
+    <ul>
+      <li>Create GitHub repo <code class="inline">smartxchain-site</code> (private or public — your call)</li>
+      <li>Scaffold Astro project (<code class="inline">npm create astro@latest</code>, TypeScript "Strict" template)</li>
+      <li>Install Tailwind, MDX integration, image, sitemap, RSS</li>
+      <li>Set up ESLint + Prettier + a basic CI workflow</li>
+      <li>Connect to Cloudflare Pages → first deploy at <code class="inline">smartxchain.pages.dev</code></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 1</span>
+      <h3>Design system</h3>
+      <span class="est">~1 day</span>
+    </div>
+    <ul>
+      <li>Port the Frontier color/type tokens from the concept mockup into Tailwind config</li>
+      <li>Build base layout components: <code class="inline">&lt;Header&gt;</code> (ticker bar, nav), <code class="inline">&lt;Footer&gt;</code>, <code class="inline">&lt;Container&gt;</code></li>
+      <li>Typography scale: Fraunces (display) + Inter (body) + IBM Plex Mono (UI/data)</li>
+      <li>Theme tokens for sections (Chain Watch green, AI Lab cyan, etc. — subtle differentiation)</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 2</span>
+      <h3>Content schema + seed posts</h3>
+      <span class="est">~2 hours</span>
+    </div>
+    <ul>
+      <li>Define <code class="inline">posts</code> and <code class="inline">authors</code> collections (see §05)</li>
+      <li>Write 3–5 placeholder posts so the design has real-feeling content to render</li>
+      <li>Add a <code class="inline">docs/EDITORIAL.md</code> with house style + how to publish</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 3</span>
+      <h3>Homepage</h3>
+      <span class="est">~1 day</span>
+    </div>
+    <ul>
+      <li>Hero featured story (latest post with <code class="inline">featured: true</code>)</li>
+      <li>Signal sidebar (4 latest posts, any category)</li>
+      <li>Category grid (top story per section, 3-up)</li>
+      <li>"Signal of the Week" block (manual editor pick + chart embed)</li>
+      <li>Ticker bar (static for now; live in Phase 7)</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 4</span>
+      <h3>Article + category + tag pages</h3>
+      <span class="est">~1 day</span>
+    </div>
+    <ul>
+      <li>Article template: title block, byline, body, related posts, prev/next nav</li>
+      <li>MDX components: <code class="inline">&lt;Callout&gt;</code>, <code class="inline">&lt;Chart&gt;</code>, <code class="inline">&lt;Quote&gt;</code>, <code class="inline">&lt;Ticker&gt;</code>, <code class="inline">&lt;Figure&gt;</code></li>
+      <li>Category index pages (one per section)</li>
+      <li>Tag pages (auto-generated from frontmatter)</li>
+      <li>Author bio pages</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 5</span>
+      <h3>Archive page (the one you asked for)</h3>
+      <span class="est">~half day</span>
+    </div>
+    <ul>
+      <li><code class="inline">/archive</code> with paginated reverse-chronological list</li>
+      <li>Filter chips: by category, by year</li>
+      <li>URL-state-preserved filters (links to filtered views are shareable)</li>
+      <li>Pagination at <code class="inline">/archive/1</code>, <code class="inline">/archive/2</code> (static, SEO-friendly)</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 6</span>
+      <h3>Search</h3>
+      <span class="est">~half day</span>
+    </div>
+    <ul>
+      <li>Install Pagefind (<code class="inline">npm i -D pagefind</code>)</li>
+      <li>Add post-build step to index the <code class="inline">dist/</code> directory</li>
+      <li>Search UI at <code class="inline">/search</code> + a header-mounted quick-search modal (Cmd-K)</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 7</span>
+      <h3>Live ticker</h3>
+      <span class="est">~half day</span>
+    </div>
+    <ul>
+      <li>Client-side fetch from CoinGecko free API (no auth needed at low volume)</li>
+      <li>Symbols configurable from frontmatter or a small JSON config</li>
+      <li>60-second refresh, graceful skeleton on first load, gracefully degrades if the API is down</li>
+      <li>Cache result in <code class="inline">sessionStorage</code> so navigations don't re-fetch</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 8</span>
+      <h3>Newsletter signup</h3>
+      <span class="est">~2 hours</span>
+    </div>
+    <ul>
+      <li>Create Buttondown account; configure "from" name and reply-to</li>
+      <li>Embed signup form on <code class="inline">/newsletter</code> and as a homepage footer block</li>
+      <li>Confirmation email template ("The Chain Letter — welcome")</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 9</span>
+      <h3>SEO + RSS + sitemap + social</h3>
+      <span class="est">~half day</span>
+    </div>
+    <ul>
+      <li>Per-page <code class="inline">&lt;title&gt;</code>, meta description, canonical, Open Graph, Twitter card</li>
+      <li>JSON-LD <code class="inline">Article</code> schema on posts (helps Google News)</li>
+      <li>RSS feed (<code class="inline">@astrojs/rss</code>) — full content, per-category feeds too</li>
+      <li>Sitemap auto-generated; <code class="inline">robots.txt</code> set up</li>
+      <li>Dynamic OG images per post (via Satori at build time)</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 10</span>
+      <h3>Performance + accessibility pass</h3>
+      <span class="est">~half day</span>
+    </div>
+    <ul>
+      <li>Image optimization (Astro <code class="inline">&lt;Image&gt;</code> with AVIF/WebP)</li>
+      <li>Lighthouse: target 95+ on Performance, Accessibility, Best Practices, SEO</li>
+      <li>Keyboard nav, focus states, color-contrast spot check (Frontier's dark palette needs verification)</li>
+      <li>Skip-to-content link, semantic landmarks, alt text discipline</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="head">
+      <span class="pnum">// PHASE 11</span>
+      <h3>Domain cutover + launch</h3>
+      <span class="est">~3h + 24h wait</span>
+    </div>
+    <ul>
+      <li>Move nameservers Route 53 → Cloudflare (see §08)</li>
+      <li>Add <code class="inline">smartxchain.com</code> and <code class="inline">www.smartxchain.com</code> as custom domains in Pages</li>
+      <li>Set up redirects (<code class="inline">www → apex</code>)</li>
+      <li>Verify SSL, sitemap is reachable, RSS validates, Google Search Console verification</li>
+      <li>Smoke test on real domain → ship</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 10 COST ============ -->
+<section class="s" id="cost">
+  <div class="num">// 10 — COST</div>
+  <h2>What this costs to run.</h2>
+
+  <div class="cost">
+    <div class="row head">
+      <div>Item</div>
+      <div>Monthly</div>
+      <div>Notes</div>
+    </div>
+    <div class="row">
+      <div>Cloudflare Pages</div>
+      <div class="price">$0</div>
+      <div>Free tier: unlimited bandwidth, 500 builds/month, 100 custom domains. We use a tiny fraction.</div>
+    </div>
+    <div class="row">
+      <div>Cloudflare DNS</div>
+      <div class="price">$0</div>
+      <div>Free with any plan once nameservers are pointed at Cloudflare.</div>
+    </div>
+    <div class="row">
+      <div>Cloudflare Web Analytics</div>
+      <div class="price">$0</div>
+      <div>Free, privacy-friendly, no cookie banner needed.</div>
+    </div>
+    <div class="row">
+      <div>Domain renewal (Route 53)</div>
+      <div class="price">~$1.25</div>
+      <div>~$15/year ÷ 12. Move to Cloudflare registrar at renewal to save ~$3/yr.</div>
+    </div>
+    <div class="row">
+      <div>Route 53 hosted zone</div>
+      <div class="price">$0</div>
+      <div>Delete after DNS cutover. (Currently ~$0.50/mo.)</div>
+    </div>
+    <div class="row">
+      <div>Buttondown newsletter</div>
+      <div class="price">$0 → $9</div>
+      <div>Free up to 100 subscribers. $9/mo to 1000. $29/mo to 5000.</div>
+    </div>
+    <div class="row">
+      <div>GitHub</div>
+      <div class="price">$0</div>
+      <div>Free for public or private repos.</div>
+    </div>
+    <div class="row total">
+      <div><strong>Launch total (v1)</strong></div>
+      <div class="price"><strong>~$1.25/mo</strong></div>
+      <div>Add $9 once newsletter passes 100 subs.</div>
+    </div>
+  </div>
+
+  <p style="color:#6a8a7a;font-size:14px;margin-top:24px;">
+    Optional later: Cloudflare R2 for images (~$0–5/mo at our scale), D1 if you add gated content (free tier covers a lot), a paid Astro template or stock photo budget.
+  </p>
+</section>
+
+<!-- ============ 11 OPEN DECISIONS ============ -->
+<section class="s" id="decisions">
+  <div class="num">// 11 — OPEN DECISIONS</div>
+  <h2>Seven things I need from you to start.</h2>
+  <p>None of these are blockers in the sense that we can't proceed — I have defaults for all of them. But each one is worth a minute of your thought because it'll shape the build.</p>
+
+  <div class="qa">
+    <p class="q">01 · Tagline?</p>
+    <p class="a">My default: <strong>"Signal from the frontier."</strong> Alternatives in §01. Or send me your own.</p>
+  </div>
+
+  <div class="qa">
+    <p class="q">02 · Categories — confirm the six?</p>
+    <p class="a">My default: <strong>Chain Watch, AI Lab, Deep Tech, Markets, Research, Opinion.</strong> Swap, add, or remove any.</p>
+  </div>
+
+  <div class="qa">
+    <p class="q">03 · Newsletter provider?</p>
+    <p class="a">My default: <strong>Buttondown</strong> (indie, generous, simple). Alternatives: Beehiiv (growth tools), ConvertKit (creator economy features), Substack (don't — you lose domain ownership of the experience).</p>
+  </div>
+
+  <div class="qa">
+    <p class="q">04 · Solo author or team?</p>
+    <p class="a">Affects whether we build full author profile pages from day one or just use a single byline. My default: <strong>solo with the schema ready for adding authors later.</strong></p>
+  </div>
+
+  <div class="qa">
+    <p class="q">05 · Logo / wordmark?</p>
+    <p class="a">The mockup uses a typographic treatment (<code class="inline">▲ SMARTXCHAIN</code> in IBM Plex Mono). Works fine for launch. If you want a real logo designed, that's a separate ~$300–800 spend with a freelancer — or I can sketch a few options for free.</p>
+  </div>
+
+  <div class="qa">
+    <p class="q">06 · Move nameservers from Route 53 to Cloudflare?</p>
+    <p class="a">Strongly recommended (§08). Free, gets you the full Cloudflare stack. <strong>I need your go-ahead before we cut over.</strong></p>
+  </div>
+
+  <div class="qa">
+    <p class="q">07 · Repo: public or private?</p>
+    <p class="a">Public has marketing value (builds reputation, attracts contributors). Private is just simpler. Either works on Cloudflare Pages free tier. My default: <strong>private until launch, then make public if you're comfortable.</strong></p>
+  </div>
+</section>
+
+<!-- ============ 12 APPROVAL ============ -->
+<section class="s">
+  <div class="num">// 12 — APPROVAL</div>
+  <h2>What I'll do once you sign off.</h2>
+
+  <ol>
+    <li>You answer the seven questions in §11 (defaults work for any you skip)</li>
+    <li>I save this spec to <code class="inline">docs/specs/2026-05-23-frontier-design.md</code> in markdown form and commit it</li>
+    <li>I generate a detailed step-by-step <em>implementation plan</em> (the one we'll actually execute against, broken into commits) at <code class="inline">docs/plans/2026-05-23-frontier-plan.md</code></li>
+    <li>We start at Phase 0 and ship to <code class="inline">smartxchain.pages.dev</code> the same day</li>
+    <li>You review at the end of each phase before we move to the next</li>
+  </ol>
+
+  <div class="approval">
+    <h3>Reply with:</h3>
+    <ul style="list-style:none;padding:0;">
+      <li style="padding:8px 0;border-bottom:1px dashed #1c2620;"><strong style="color:#4ade80;">"Approved — go"</strong> &nbsp;→&nbsp; I'll use defaults for any unanswered questions and start Phase 0.</li>
+      <li style="padding:8px 0;border-bottom:1px dashed #1c2620;"><strong style="color:#4ade80;">"Approved with changes:"</strong> &nbsp;→&nbsp; tell me which decisions in §11 to override, then we start.</li>
+      <li style="padding:8px 0;"><strong style="color:#fbbf24;">"Hold up, I have questions"</strong> &nbsp;→&nbsp; ask anything in the spec that doesn't make sense and we iterate.</li>
+    </ul>
+  </div>
+
+  <p style="margin-top:32px;color:#6a8a7a;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.1em;">// END SPEC v0.1 // SMARTXCHAIN / FRONTIER</p>
+</section>
+
+</body>
+</html>
