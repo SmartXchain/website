@@ -1,0 +1,136 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Search — SmartXChain"
+  description="Search every article on SmartXChain. Static index, in-browser, zero server cost."
+>
+  <section class="container-wide py-16">
+    <div class="kicker">// search</div>
+    <h1 class="mt-3 font-display text-5xl font-extrabold tracking-tight text-white md:text-6xl">
+      Search
+    </h1>
+    <p class="mt-4 max-w-prose text-lg text-frontier-text-muted">
+      Search every article ever published. Index built at deploy time, runs
+      entirely in your browser.
+    </p>
+
+    <div class="mt-12">
+      <label for="search-input" class="sr-only">Search query</label>
+      <input
+        id="search-input"
+        type="search"
+        placeholder="Type to search…"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        class="w-full border border-frontier-border bg-frontier-surface px-5 py-4 font-display text-2xl text-white placeholder:text-frontier-text-dim focus:border-frontier-signal focus:outline-none"
+      />
+      <div id="search-state" class="ui-text mt-3">// type to search</div>
+    </div>
+
+    <div id="search-results" class="mt-8"></div>
+  </section>
+</Base>
+
+<script>
+  type PagefindResultData = {
+    url: string;
+    excerpt: string;
+    meta: { title?: string; category?: string; image?: string };
+  };
+  type PagefindResult = { data: () => Promise<PagefindResultData> };
+
+  const init = async () => {
+    const input = document.getElementById('search-input') as HTMLInputElement | null;
+    const results = document.getElementById('search-results');
+    const state = document.getElementById('search-state');
+    if (!input || !results || !state) return;
+
+    let pf: { search: (q: string) => Promise<{ results: PagefindResult[] }>; options: (o: object) => Promise<void> } | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const loadPagefind = async () => {
+      if (pf) return pf;
+      try {
+        pf = (await import(/* @vite-ignore */ '/pagefind/pagefind.js')) as typeof pf;
+        await pf!.options({ baseUrl: '/' });
+        return pf;
+      } catch {
+        state.textContent =
+          '// search index not available (run `npm run build` to generate it)';
+        return null;
+      }
+    };
+
+    const escape = (s: string) =>
+      s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+    const render = async (resultSet: { results: PagefindResult[] } | null, query: string) => {
+      results.innerHTML = '';
+      if (!resultSet || resultSet.results.length === 0) {
+        state.textContent = `// no results for "${query}"`;
+        return;
+      }
+      const top = resultSet.results.slice(0, 20);
+      const data = await Promise.all(top.map((r) => r.data()));
+      const total = resultSet.results.length;
+      state.textContent = `// ${total} result${total === 1 ? '' : 's'} for "${query}"`;
+      const frag = document.createDocumentFragment();
+      for (const d of data) {
+        const a = document.createElement('a');
+        a.href = d.url;
+        a.className =
+          'block border-b border-frontier-border py-5 transition-colors hover:bg-frontier-surface';
+        const cat = d.meta?.category ?? '';
+        const title = d.meta?.title ?? d.url;
+        a.innerHTML = `
+          ${cat ? `<div class="font-mono text-xs uppercase tracking-kicker text-frontier-signal">// ${escape(cat)}</div>` : ''}
+          <h3 class="mt-2 font-display text-xl font-bold leading-tight text-white">${escape(title)}</h3>
+          <p class="mt-2 text-sm text-frontier-text-muted">${d.excerpt}</p>
+        `;
+        frag.appendChild(a);
+      }
+      results.appendChild(frag);
+    };
+
+    const doSearch = async (q: string) => {
+      const trimmed = q.trim();
+      if (!trimmed) {
+        results.innerHTML = '';
+        state.textContent = '// type to search';
+        const sp = new URLSearchParams(window.location.search);
+        sp.delete('q');
+        const qs = sp.toString();
+        window.history.replaceState({}, '', qs ? `?${qs}` : window.location.pathname);
+        return;
+      }
+      const inst = await loadPagefind();
+      if (!inst) return;
+      state.textContent = '// searching…';
+      const r = await inst.search(trimmed);
+      await render(r, trimmed);
+      const sp = new URLSearchParams(window.location.search);
+      sp.set('q', trimmed);
+      window.history.replaceState({}, '', `?${sp.toString()}`);
+    };
+
+    input.addEventListener('input', () => {
+      const q = input.value;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => doSearch(q), 200);
+    });
+
+    const initial = new URLSearchParams(window.location.search).get('q');
+    if (initial) {
+      input.value = initial;
+      doSearch(initial);
+    } else {
+      input.focus();
+    }
+  };
+
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

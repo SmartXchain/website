@@ -45,7 +45,11 @@ const components = { Callout, Quote, Figure };
   title={`${post.data.title} — SmartXChain`}
   description={post.data.excerpt}
 >
-  <article class="container-wide py-16">
+  <article
+    class="container-wide py-16"
+    data-pagefind-body
+    data-pagefind-meta={`category:${section.name}`}
+  >
     <a
       href={`/${post.data.category}`}
       class="font-mono text-xs uppercase tracking-kicker transition-opacity hover:opacity-80"

@@ -18,4 +18,15 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: 'viewport',
   },
+  vite: {
+    build: {
+      rollupOptions: {
+        // Pagefind ships its runtime into /pagefind/pagefind.js after the
+        // Astro build completes. Treat it as external so the search page's
+        // dynamic import is left as a runtime fetch instead of a bundle-time
+        // resolution attempt.
+        external: ['/pagefind/pagefind.js'],
+      },
+    },
+  },
 });
