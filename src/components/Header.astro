@@ -1,0 +1,38 @@
+---
+import Ticker from './Ticker.astro';
+import { sections } from '../lib/sections';
+
+const now = new Date();
+const dateStr = now.toISOString().slice(2, 10).replace(/-/g, '.');
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-frontier-border bg-frontier-bg/95 backdrop-blur supports-[backdrop-filter]:bg-frontier-bg/80"
+>
+  <div
+    class="container-wide flex items-center justify-between gap-6 py-4 font-mono text-xs uppercase tracking-kicker text-frontier-text-dim"
+  >
+    <a
+      href="/"
+      class="font-bold tracking-[0.2em] text-frontier-signal transition-opacity hover:opacity-80"
+    >
+      <span aria-hidden>▲</span> SMARTXCHAIN
+    </a>
+    <nav class="hidden gap-5 md:flex" aria-label="Primary">
+      {
+        sections.map((s) => (
+          <a
+            href={`/${s.slug}`}
+            class="transition-colors hover:text-frontier-signal"
+          >
+            {s.short}
+          </a>
+        ))
+      }
+      <a href="/archive" class="transition-colors hover:text-frontier-signal">Archive</a>
+      <a href="/search" class="transition-colors hover:text-frontier-signal">Search</a>
+    </nav>
+    <div class="hidden text-frontier-text-dim md:block">{dateStr}</div>
+  </div>
+  <Ticker />
+</header>

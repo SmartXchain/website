@@ -1,0 +1,39 @@
+---
+// Static ticker. Becomes live in Phase 7.
+interface TickerItem {
+  symbol: string;
+  value: string;
+  change: number;
+}
+
+const items: TickerItem[] = [
+  { symbol: 'BTC', value: '$94,210', change: 1.2 },
+  { symbol: 'ETH', value: '$3,418', change: 0.8 },
+  { symbol: 'SOL', value: '$182', change: -0.6 },
+  { symbol: 'NVDA', value: '$842', change: -2.1 },
+  { symbol: 'AI-CHIP IDX', value: '+3.4%', change: 3.4 },
+  { symbol: 'L2 TVL', value: '$38.2B', change: 4.1 },
+];
+
+const fmt = (c: number) => `${c >= 0 ? '+' : ''}${c.toFixed(1)}%`;
+---
+
+<div class="border-y border-frontier-border bg-frontier-surface">
+  <div
+    class="container-wide flex gap-10 overflow-x-auto py-2.5 font-mono text-xs text-frontier-text-dim"
+    role="region"
+    aria-label="Market ticker (static demo)"
+  >
+    {
+      items.map((it) => (
+        <span class="flex shrink-0 items-baseline gap-2">
+          <strong class="font-semibold text-frontier-signal">{it.symbol}</strong>
+          <span class="text-frontier-text-muted">{it.value}</span>
+          <span class={it.change >= 0 ? 'text-frontier-signal' : 'text-frontier-danger'}>
+            {fmt(it.change)}
+          </span>
+        </span>
+      ))
+    }
+  </div>
+</div>

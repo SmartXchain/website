@@ -1,0 +1,62 @@
+---
+import { sections } from '../lib/sections';
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-32 border-t border-frontier-border bg-frontier-surface">
+  <div class="container-wide grid gap-12 py-16 md:grid-cols-4">
+    <div class="md:col-span-2">
+      <a
+        href="/"
+        class="font-mono text-sm font-bold tracking-[0.2em] text-frontier-signal"
+      >
+        <span aria-hidden>▲</span> SMARTXCHAIN
+      </a>
+      <p class="mt-4 max-w-prose text-sm text-frontier-text-muted">
+        Signal from the frontier. A specialist publication covering the
+        convergence of Web3, AI, and deep tech.
+      </p>
+      <a
+        href="/newsletter"
+        class="mt-6 inline-block font-mono text-xs uppercase tracking-ui text-frontier-signal hover:opacity-80"
+      >
+        → Subscribe to The Chain Letter
+      </a>
+    </div>
+    <div>
+      <h4 class="kicker mb-4">Sections</h4>
+      <ul class="space-y-2 text-sm">
+        {
+          sections.map((s) => (
+            <li>
+              <a
+                href={`/${s.slug}`}
+                class="text-frontier-text-muted transition-colors hover:text-frontier-text"
+              >
+                {s.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div>
+      <h4 class="kicker mb-4">Site</h4>
+      <ul class="space-y-2 text-sm">
+        <li><a href="/archive" class="text-frontier-text-muted hover:text-frontier-text">Archive</a></li>
+        <li><a href="/search" class="text-frontier-text-muted hover:text-frontier-text">Search</a></li>
+        <li><a href="/about" class="text-frontier-text-muted hover:text-frontier-text">About</a></li>
+        <li><a href="/rss.xml" class="text-frontier-text-muted hover:text-frontier-text">RSS</a></li>
+        <li><a href="/privacy" class="text-frontier-text-muted hover:text-frontier-text">Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-frontier-border">
+    <div
+      class="container-wide flex flex-wrap items-center justify-between gap-2 py-6 font-mono text-xs uppercase tracking-ui text-frontier-text-dim"
+    >
+      <span>© {year} SmartXChain</span>
+      <span>// Signal from the frontier</span>
+    </div>
+  </div>
+</footer>

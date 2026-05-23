@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-frontier-bg text-frontier-text font-sans antialiased;
+  }
+  ::selection {
+    @apply bg-frontier-signal/30 text-white;
+  }
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-frontier-signal;
+  }
+}
+
+@layer components {
+  .kicker {
+    @apply font-mono text-xs uppercase tracking-kicker text-frontier-signal;
+  }
+  .ui-text {
+    @apply font-mono text-xs uppercase tracking-ui text-frontier-text-dim;
+  }
+  .container-wide {
+    @apply mx-auto max-w-wide px-[6vw];
+  }
+}

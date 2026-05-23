@@ -1,36 +1,49 @@
 ---
-const title = 'SmartXChain — Signal from the frontier';
-const description =
-  'A specialist publication for Web3, AI, and deep tech. Signal over noise.';
+import Base from '../layouts/Base.astro';
+import { sections } from '../lib/sections';
+
+const today = new Date().toISOString().slice(0, 10);
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  </head>
-  <body class="bg-frontier-bg text-frontier-text font-sans antialiased">
-    <main class="mx-auto max-w-wide px-[6vw] py-32">
-      <p class="font-mono text-xs uppercase tracking-kicker text-frontier-signal">
-        // SmartXChain · v0.0.1
-      </p>
-      <h1
-        class="mt-6 max-w-[18ch] font-display text-5xl font-extrabold leading-[1.02] tracking-tight text-white md:text-7xl"
-      >
-        Signal from the frontier.
-      </h1>
-      <p class="mt-6 max-w-[60ch] text-lg text-frontier-text-muted">
-        Coming soon. A specialist publication for Web3, AI, and deep tech.
-      </p>
-      <p
-        class="mt-12 font-mono text-xs uppercase tracking-ui text-frontier-text-dim"
-      >
-        // build pipeline online · {new Date().toISOString().slice(0, 10)}
-      </p>
-    </main>
-  </body>
-</html>
+<Base title="SmartXChain — Signal from the frontier">
+  <section class="container-wide py-24 md:py-32">
+    <p class="kicker">// SmartXChain · v0.1 · Phase 1 — Design System</p>
+    <h1
+      class="mt-6 max-w-[18ch] font-display text-5xl font-extrabold leading-[1.02] tracking-tight text-white md:text-7xl"
+    >
+      Signal from the frontier.
+    </h1>
+    <p class="mt-6 max-w-[60ch] text-lg text-frontier-text-muted">
+      A specialist publication covering the convergence of Web3, AI, and deep
+      tech. Editorial launch in progress. The full archive opens with our first
+      issue. Until then, browse the visual
+      <a
+        href="/styleguide"
+        class="text-frontier-signal underline decoration-frontier-signal/30 underline-offset-4 hover:decoration-frontier-signal"
+        >style guide</a
+      > to see the brand take shape.
+    </p>
+
+    <div class="mt-14 grid gap-6 md:grid-cols-3">
+      {
+        sections.map((s) => (
+          <a
+            href={`/${s.slug}`}
+            class="block border border-frontier-border bg-frontier-surface p-6 transition-colors hover:border-frontier-border-strong"
+          >
+            <div
+              class="font-mono text-xs uppercase tracking-kicker"
+              style={`color:${s.accentHex}`}
+            >
+              // {s.slug}
+            </div>
+            <div class="mt-2 font-display text-2xl font-bold text-white">{s.name}</div>
+            <div class="mt-2 text-sm text-frontier-text-muted">{s.blurb}</div>
+          </a>
+        ))
+      }
+    </div>
+
+    <p class="ui-text mt-14">// build pipeline online · {today}</p>
+  </section>
+</Base>
