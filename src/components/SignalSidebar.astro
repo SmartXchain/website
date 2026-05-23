@@ -1,0 +1,35 @@
+---
+import type { Post } from '../lib/posts';
+import { getSection } from '../lib/sections';
+import { timeSince } from '../lib/posts';
+
+interface Props {
+  items: Post[];
+}
+const { items } = Astro.props;
+---
+
+<aside class="border border-frontier-border bg-frontier-surface p-6">
+  <h3 class="kicker mb-4">Today's Signal</h3>
+  <ul class="divide-y divide-frontier-border">
+    {
+      items.map((p) => {
+        const section = getSection(p.data.category);
+        return (
+          <li class="py-3 first:pt-0 last:pb-0">
+            <a href={`/posts/${p.slug}`} class="group block">
+              <p class="text-sm leading-snug text-frontier-text transition-colors group-hover:text-frontier-signal">
+                {p.data.title}
+              </p>
+              <p class="ui-text mt-1">
+                <span style={`color:${section.accentHex}`}>{section.name.toUpperCase()}</span>
+                {' · '}
+                {timeSince(p.data.date)}
+              </p>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</aside>

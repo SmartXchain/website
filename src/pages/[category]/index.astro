@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PostRow from '../../components/PostRow.astro';
+import { sections, getSection, type SectionSlug } from '../../lib/sections';
+import { sortByDateDesc } from '../../lib/posts';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  return sections.map((s) => ({ params: { category: s.slug } }));
+}
+
+const { category } = Astro.params as { category: SectionSlug };
+const section = getSection(category);
+
+const posts = sortByDateDesc(
+  await getCollection('posts', ({ data }) => !data.draft && data.category === category),
+);
+---
+
+<Base
+  title={`${section.name} — SmartXChain`}
+  description={section.blurb}
+>
+  <section class="container-wide py-16">
+    <div
+      class="font-mono text-xs uppercase tracking-kicker"
+      style={`color:${section.accentHex}`}
+    >
+      // {section.slug}
+    </div>
+    <h1 class="mt-3 font-display text-5xl font-extrabold tracking-tight text-white md:text-6xl">
+      {section.name}
+    </h1>
+    <p class="mt-4 max-w-prose text-lg text-frontier-text-muted">{section.blurb}</p>
+
+    {
+      posts.length === 0 ? (
+        <div class="mt-16 border border-frontier-border bg-frontier-surface p-8">
+          <div class="ui-text">// EMPTY SECTION</div>
+          <p class="mt-3 text-frontier-text-muted">
+            No published posts in {section.name} yet. Check back, or browse the{' '}
+            <a href="/archive" class="text-frontier-signal hover:opacity-80">
+              full archive
+            </a>
+            .
+          </p>
+        </div>
+      ) : (
+        <div class="mt-12">
+          <div class="ui-text border-b border-frontier-border pb-3">
+            // {posts.length} POST{posts.length === 1 ? '' : 'S'}
+          </div>
+          {posts.map((p) => (
+            <PostRow post={p} />
+          ))}
+        </div>
+      )
+    }
+  </section>
+</Base>

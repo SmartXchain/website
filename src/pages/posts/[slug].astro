@@ -1,0 +1,146 @@
+---
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getSection } from '../../lib/sections';
+import { formatStamp, readTime, sortByDateDesc } from '../../lib/posts';
+import Callout from '../../components/mdx/Callout.astro';
+import Quote from '../../components/mdx/Quote.astro';
+import Figure from '../../components/mdx/Figure.astro';
+import PostCard from '../../components/PostCard.astro';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+const { post } = Astro.props;
+const author = await getEntry(post.data.author);
+const section = getSection(post.data.category);
+const mins = readTime(post.body);
+const stamp = formatStamp(post.data.updatedAt ?? post.data.date);
+
+const allPosts = sortByDateDesc(
+  await getCollection('posts', ({ data }) => !data.draft),
+);
+const idx = allPosts.findIndex((p) => p.slug === post.slug);
+const newer = idx > 0 ? allPosts[idx - 1] : null;
+const older = idx < allPosts.length - 1 ? allPosts[idx + 1] : null;
+const related = allPosts
+  .filter((p) => p.data.category === post.data.category && p.slug !== post.slug)
+  .slice(0, 3);
+
+const { Content } = await post.render();
+const components = { Callout, Quote, Figure };
+---
+
+<Base
+  title={`${post.data.title} — SmartXChain`}
+  description={post.data.excerpt}
+>
+  <article class="container-wide py-16">
+    <a
+      href={`/${post.data.category}`}
+      class="font-mono text-xs uppercase tracking-kicker transition-opacity hover:opacity-80"
+      style={`color:${section.accentHex}`}
+    >
+      ← {section.name}
+    </a>
+
+    <header class="mt-6 max-w-4xl">
+      <h1 class="font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-white md:text-6xl">
+        {post.data.title}
+      </h1>
+      <p class="mt-5 max-w-prose text-xl text-frontier-text-muted">
+        {post.data.excerpt}
+      </p>
+      <div class="ui-text mt-8 border-y border-frontier-border py-4">
+        BY <a href={`/authors/${author.id}`} class="text-frontier-signal hover:opacity-80">{author.data.name.toUpperCase()}</a>
+        {author.data.role && <> · {author.data.role.toUpperCase()}</>}
+        {' '}· {stamp} · {mins} MIN READ
+      </div>
+    </header>
+
+    {
+      post.data.hero && (
+        <img
+          src={post.data.hero.src}
+          alt={post.data.heroAlt ?? ''}
+          class="mt-10 w-full border border-frontier-border"
+        />
+      )
+    }
+
+    <div class="prose-frontier mt-10">
+      <Content components={components} />
+    </div>
+
+    {
+      post.data.tags.length > 0 && (
+        <div class="mt-12 flex flex-wrap gap-2 border-t border-frontier-border pt-8">
+          {post.data.tags.map((tag) => (
+            <a
+              href={`/tags/${tag}`}
+              class="font-mono text-xs uppercase tracking-ui text-frontier-text-dim transition-colors hover:text-frontier-signal"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )
+    }
+
+    <nav class="mt-12 grid gap-4 border-t border-frontier-border pt-8 md:grid-cols-2">
+      {
+        newer ? (
+          <a
+            href={`/posts/${newer.slug}`}
+            class="group border border-frontier-border p-5 transition-colors hover:border-frontier-border-strong"
+          >
+            <div class="ui-text">← Newer</div>
+            <div class="mt-1 text-base font-semibold text-frontier-text group-hover:text-frontier-signal">
+              {newer.data.title}
+            </div>
+          </a>
+        ) : (
+          <div />
+        )
+      }
+      {
+        older ? (
+          <a
+            href={`/posts/${older.slug}`}
+            class="group border border-frontier-border p-5 transition-colors hover:border-frontier-border-strong md:text-right"
+          >
+            <div class="ui-text">Older →</div>
+            <div class="mt-1 text-base font-semibold text-frontier-text group-hover:text-frontier-signal">
+              {older.data.title}
+            </div>
+          </a>
+        ) : (
+          <div />
+        )
+      }
+    </nav>
+
+    {
+      related.length > 0 && (
+        <section class="mt-20">
+          <div class="kicker">// Related in {section.name}</div>
+          <div class="mt-6 grid gap-6 md:grid-cols-3">
+            {related.map((p) => (
+              <PostCard post={p} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </article>
+</Base>

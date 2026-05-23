@@ -1,35 +1,53 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import HeroPost from '../components/HeroPost.astro';
+import SignalSidebar from '../components/SignalSidebar.astro';
+import PostCard from '../components/PostCard.astro';
+import SignalOfWeek from '../components/SignalOfWeek.astro';
 import { sections } from '../lib/sections';
+import { sortByDateDesc } from '../lib/posts';
 
-const today = new Date().toISOString().slice(0, 10);
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const sorted = sortByDateDesc(allPosts);
+
+const featured = sorted.find((p) => p.data.featured) ?? sorted[0];
+const remainder = sorted.filter((p) => p.slug !== featured.slug);
+
+const signalItems = remainder.slice(0, 4);
+
+const latestPerCategory = sections
+  .map((s) => remainder.find((p) => p.data.category === s.slug))
+  .filter((p): p is NonNullable<typeof p> => p !== undefined);
+const categoryGrid = sortByDateDesc(latestPerCategory).slice(0, 3);
+
+const signalOfWeek =
+  remainder.find((p) => p.data.category === 'research') ?? remainder[0];
 ---
 
 <Base title="SmartXChain — Signal from the frontier">
-  <section class="container-wide py-24 md:py-32">
-    <p class="kicker">// SmartXChain · v0.1 · Phase 1 — Design System</p>
-    <h1
-      class="mt-6 max-w-[18ch] font-display text-5xl font-extrabold leading-[1.02] tracking-tight text-white md:text-7xl"
-    >
-      Signal from the frontier.
-    </h1>
-    <p class="mt-6 max-w-[60ch] text-lg text-frontier-text-muted">
-      A specialist publication covering the convergence of Web3, AI, and deep
-      tech. Editorial launch in progress. The full archive opens with our first
-      issue. Until then, browse the visual
-      <a
-        href="/styleguide"
-        class="text-frontier-signal underline decoration-frontier-signal/30 underline-offset-4 hover:decoration-frontier-signal"
-        >style guide</a
-      > to see the brand take shape.
-    </p>
+  <section class="container-wide grid gap-12 py-16 md:grid-cols-[2.2fr_1fr] md:py-20">
+    <HeroPost post={featured} />
+    <SignalSidebar items={signalItems} />
+  </section>
 
-    <div class="mt-14 grid gap-6 md:grid-cols-3">
+  <section class="container-wide pb-16">
+    <div class="kicker">// Across the Frontier</div>
+    <div class="mt-6 grid gap-6 md:grid-cols-3">
+      {categoryGrid.map((p) => <PostCard post={p} />)}
+    </div>
+  </section>
+
+  {signalOfWeek && <SignalOfWeek post={signalOfWeek} />}
+
+  <section class="container-wide py-16">
+    <div class="kicker">// Sections</div>
+    <div class="mt-6 grid gap-3 md:grid-cols-3">
       {
         sections.map((s) => (
           <a
             href={`/${s.slug}`}
-            class="block border border-frontier-border bg-frontier-surface p-6 transition-colors hover:border-frontier-border-strong"
+            class="group border border-frontier-border bg-frontier-surface p-5 transition-colors hover:border-frontier-border-strong"
           >
             <div
               class="font-mono text-xs uppercase tracking-kicker"
@@ -37,13 +55,13 @@ const today = new Date().toISOString().slice(0, 10);
             >
               // {s.slug}
             </div>
-            <div class="mt-2 font-display text-2xl font-bold text-white">{s.name}</div>
-            <div class="mt-2 text-sm text-frontier-text-muted">{s.blurb}</div>
+            <div class="mt-2 font-display text-xl font-bold text-white group-hover:text-frontier-signal">
+              {s.name} →
+            </div>
+            <div class="mt-1 text-sm text-frontier-text-muted">{s.blurb}</div>
           </a>
         ))
       }
     </div>
-
-    <p class="ui-text mt-14">// build pipeline online · {today}</p>
   </section>
 </Base>

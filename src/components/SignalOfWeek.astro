@@ -1,0 +1,72 @@
+---
+import type { Post } from '../lib/posts';
+import { getSection } from '../lib/sections';
+
+interface Props {
+  post: Post;
+  // 12 trailing weekly values (0–100), oldest first
+  trend?: number[];
+  pullQuote?: string;
+  pullQuoteAttribution?: string;
+}
+
+const {
+  post,
+  trend = [30, 42, 38, 55, 48, 62, 71, 80, 78, 92, 88, 100],
+  pullQuote = "The thesis people will fight over next is whether an AI agent that holds keys is a customer, an employee, or a counterparty.",
+  pullQuoteAttribution = "Editor's Note",
+} = Astro.props;
+
+const section = getSection(post.data.category);
+---
+
+<section class="border-y border-frontier-border bg-frontier-surface">
+  <div class="container-wide grid gap-12 py-16 md:grid-cols-2">
+    <div>
+      <div class="kicker">// Signal of the Week</div>
+      <h3
+        class="mt-3 font-display text-3xl font-extrabold tracking-tight text-white md:text-4xl"
+      >
+        <a href={`/posts/${post.slug}`} class="hover:text-frontier-signal">
+          {post.data.title}
+        </a>
+      </h3>
+      <p class="mt-3 max-w-prose text-frontier-text-muted">{post.data.excerpt}</p>
+      <svg viewBox="0 0 360 120" class="mt-8 w-full" aria-hidden>
+        {
+          trend.map((v, i) => {
+            const w = 360 / trend.length;
+            const h = (v / 100) * 110;
+            return (
+              <rect
+                x={i * w + 2}
+                y={120 - h}
+                width={w - 4}
+                height={h}
+                fill="url(#bar-grad)"
+                rx="1"
+              />
+            );
+          })
+        }
+        <defs>
+          <linearGradient id="bar-grad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color={section.accentHex} />
+            <stop offset="100%" stop-color="#0a6b4e" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="ui-text mt-4">
+        // 12-WEEK TRAILING · {section.name.toUpperCase()}
+      </div>
+    </div>
+    <figure class="border-l-2 border-frontier-signal pl-6 md:pl-8">
+      <blockquote
+        class="font-display text-2xl italic leading-snug text-frontier-text md:text-3xl"
+      >
+        “{pullQuote}”
+      </blockquote>
+      <figcaption class="ui-text mt-5">— {pullQuoteAttribution}</figcaption>
+    </figure>
+  </div>
+</section>

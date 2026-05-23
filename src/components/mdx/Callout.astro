@@ -1,0 +1,39 @@
+---
+type CalloutType = 'note' | 'signal' | 'warn';
+interface Props {
+  type?: CalloutType;
+  label?: string;
+}
+const { type = 'note', label } = Astro.props;
+
+const styles: Record<CalloutType, { border: string; bg: string; label: string; defaultLabel: string }> = {
+  note: {
+    border: 'border-frontier-border',
+    bg: 'bg-frontier-surface',
+    label: 'text-frontier-text-dim',
+    defaultLabel: 'Note',
+  },
+  signal: {
+    border: 'border-frontier-signal',
+    bg: 'bg-frontier-signal/5',
+    label: 'text-frontier-signal',
+    defaultLabel: 'Signal',
+  },
+  warn: {
+    border: 'border-frontier-warn',
+    bg: 'bg-frontier-warn/5',
+    label: 'text-frontier-warn',
+    defaultLabel: 'Heads up',
+  },
+};
+const s = styles[type];
+---
+
+<aside class={`my-8 border-l-2 ${s.border} ${s.bg} px-5 py-4`}>
+  <div class={`font-mono text-xs uppercase tracking-kicker ${s.label}`}>
+    // {label ?? s.defaultLabel}
+  </div>
+  <div class="mt-2 [&>p:last-child]:mb-0 [&>p]:my-2">
+    <slot />
+  </div>
+</aside>

@@ -30,4 +30,66 @@
   .container-wide {
     @apply mx-auto max-w-wide px-[6vw];
   }
+
+  .prose-frontier {
+    @apply max-w-prose text-frontier-text;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+  .prose-frontier > * + * {
+    margin-top: 1.25rem;
+  }
+  .prose-frontier h2 {
+    @apply mt-12 mb-4 font-display text-3xl font-bold tracking-tight text-white;
+  }
+  .prose-frontier h3 {
+    @apply mt-10 mb-3 font-display text-2xl font-bold tracking-tight text-white;
+  }
+  .prose-frontier h4 {
+    @apply mt-8 mb-2 font-display text-xl font-bold text-white;
+  }
+  .prose-frontier a {
+    @apply text-frontier-signal underline decoration-frontier-signal/40 underline-offset-4 transition-colors hover:decoration-frontier-signal;
+  }
+  .prose-frontier blockquote {
+    @apply my-6 border-l-2 border-frontier-signal pl-5 italic text-frontier-text-muted;
+  }
+  .prose-frontier blockquote p {
+    margin: 0;
+  }
+  .prose-frontier ul,
+  .prose-frontier ol {
+    @apply my-4 pl-6;
+  }
+  .prose-frontier ul {
+    list-style: disc;
+  }
+  .prose-frontier ol {
+    list-style: decimal;
+  }
+  .prose-frontier li {
+    @apply my-2;
+  }
+  .prose-frontier strong {
+    @apply font-semibold text-white;
+  }
+  .prose-frontier em {
+    @apply italic;
+  }
+  .prose-frontier code {
+    @apply rounded bg-frontier-surface px-1.5 py-0.5 text-[0.92em] text-frontier-signal;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .prose-frontier pre {
+    @apply my-6 overflow-x-auto border border-frontier-border bg-frontier-surface-deep p-4;
+  }
+  .prose-frontier pre code {
+    @apply bg-transparent p-0 text-frontier-text;
+  }
+  .prose-frontier hr {
+    @apply my-12 border-frontier-border;
+  }
+  .prose-frontier img {
+    @apply my-8 w-full border border-frontier-border;
+  }
 }

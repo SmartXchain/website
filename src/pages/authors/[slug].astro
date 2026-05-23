@@ -1,0 +1,76 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PostRow from '../../components/PostRow.astro';
+import { sortByDateDesc } from '../../lib/posts';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const authors = await getCollection('authors');
+  return authors.map((a) => ({ params: { slug: a.id }, props: { author: a } }));
+}
+
+const { author } = Astro.props;
+
+const posts = sortByDateDesc(
+  await getCollection(
+    'posts',
+    ({ data }) => !data.draft && data.author.id === author.id,
+  ),
+);
+---
+
+<Base
+  title={`${author.data.name} — SmartXChain`}
+  description={author.data.bio ?? `Posts by ${author.data.name} on SmartXChain.`}
+>
+  <section class="container-wide py-16">
+    <div class="kicker">// author</div>
+    <h1 class="mt-3 font-display text-5xl font-extrabold tracking-tight text-white md:text-6xl">
+      {author.data.name}
+    </h1>
+    {
+      author.data.role && (
+        <p class="ui-text mt-2">{author.data.role}</p>
+      )
+    }
+    {
+      author.data.bio && (
+        <p class="mt-5 max-w-prose text-lg text-frontier-text-muted">
+          {author.data.bio}
+        </p>
+      )
+    }
+    <div class="mt-6 flex flex-wrap gap-5 ui-text">
+      {
+        author.data.twitter && (
+          <a href={`https://twitter.com/${author.data.twitter}`} class="hover:text-frontier-signal" rel="me noopener">
+            @{author.data.twitter}
+          </a>
+        )
+      }
+      {
+        author.data.github && (
+          <a href={`https://github.com/${author.data.github}`} class="hover:text-frontier-signal" rel="me noopener">
+            github.com/{author.data.github}
+          </a>
+        )
+      }
+      {
+        author.data.site && (
+          <a href={author.data.site} class="hover:text-frontier-signal" rel="me noopener">
+            {author.data.site.replace(/^https?:\/\//, '')}
+          </a>
+        )
+      }
+    </div>
+
+    <div class="mt-14">
+      <div class="ui-text border-b border-frontier-border pb-3">
+        // {posts.length} POST{posts.length === 1 ? '' : 'S'} BY {author.data.name.toUpperCase()}
+      </div>
+      {posts.map((p) => <PostRow post={p} />)}
+    </div>
+  </section>
+</Base>
