@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import SubscribeBox from '../components/SubscribeBox.astro';
+import { SITE } from '../lib/site';
+---
+
+<Base
+  title={`${SITE.newsletter.name} — ${SITE.name}`}
+  description={SITE.newsletter.pitch}
+>
+  <section class="container-wide py-20 md:py-28">
+    <div class="kicker">// the chain letter</div>
+    <h1 class="mt-4 max-w-[20ch] font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-white md:text-7xl">
+      Smart-contract-era tech, decoded in five minutes.
+    </h1>
+    <p class="mt-6 max-w-[60ch] text-xl text-frontier-text-muted">
+      {SITE.newsletter.pitch}
+    </p>
+
+    <div class="mt-10 max-w-2xl">
+      <SubscribeBox />
+    </div>
+
+    <section class="mt-20 grid gap-6 border-t border-frontier-border pt-12 md:grid-cols-3">
+      <div>
+        <div class="kicker">// what you get</div>
+        <h3 class="mt-3 font-display text-xl font-bold text-white">The 5-Minute Brief</h3>
+        <p class="mt-2 text-frontier-text-muted">
+          Five things you need to know from Web3, AI, and deep tech — in plain
+          English, with our take on why each one matters.
+        </p>
+      </div>
+      <div>
+        <div class="kicker">// when</div>
+        <h3 class="mt-3 font-display text-xl font-bold text-white">Weekday mornings</h3>
+        <p class="mt-2 text-frontier-text-muted">
+          Lands in your inbox by 06:30 ET. Read it with coffee. Forward the
+          best ones — that's how we grow.
+        </p>
+      </div>
+      <div>
+        <div class="kicker">// no</div>
+        <h3 class="mt-3 font-display text-xl font-bold text-white">No spam, no churn</h3>
+        <p class="mt-2 text-frontier-text-muted">
+          Free forever. One unsubscribe link in every email. We don't sell your
+          address. Buttondown handles the list, not us.
+        </p>
+      </div>
+    </section>
+
+    <p class="ui-text mt-16">
+      // already a subscriber? thanks. forward this page to a friend who'd find it useful.
+    </p>
+  </section>
+</Base>

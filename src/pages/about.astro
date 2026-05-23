@@ -1,0 +1,62 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../lib/site';
+---
+
+<Base
+  title={`About — ${SITE.name}`}
+  description={`About ${SITE.name} — ${SITE.description}`}
+>
+  <section class="container-wide py-20">
+    <div class="kicker">// about</div>
+    <h1 class="mt-3 font-display text-5xl font-extrabold tracking-tight text-white md:text-6xl">
+      About SmartXChain
+    </h1>
+
+    <div class="prose-frontier mt-10">
+      <p>
+        SmartXChain is a specialist publication covering the convergence of
+        Web3, AI, and emerging deep tech — the technologies reshaping how
+        value, intelligence, and infrastructure are exchanged.
+      </p>
+
+      <p>
+        We write for builders, investors, and researchers. Each piece tries to
+        answer three questions: <strong>what changed, why does it matter, and
+        what do you do with it.</strong> If we can't answer the third question,
+        we don't publish.
+      </p>
+
+      <h2>What we cover</h2>
+      <ul>
+        <li><strong>Chain Watch</strong> — L1/L2 protocols, onchain flows, regulation</li>
+        <li><strong>AI Lab</strong> — frontier models, agents, benchmarks, alignment</li>
+        <li><strong>Deep Tech</strong> — fusion, quantum, biotech, robotics, hard tech</li>
+        <li><strong>Markets</strong> — funding, M&amp;A, public-market signal</li>
+        <li><strong>Research</strong> — long-form deep dives, original analysis</li>
+        <li><strong>Opinion</strong> — editor's note, guest essays, hot takes</li>
+      </ul>
+
+      <h2>How we work</h2>
+      <p>
+        SmartXChain is independent and reader-supported. Our content is free.
+        Our newsletter is free. We don't run programmatic ads. We may, over
+        time, accept newsletter sponsorships that are clearly labeled — but
+        editorial decisions sit with the editor, not with sponsors.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Story tips, corrections, sponsorships: <a href="mailto:hectorg@smartxchain.com">hectorg@smartxchain.com</a>.
+      </p>
+
+      <h2>Colophon</h2>
+      <p>
+        This site is built with Astro and Tailwind, hosted on Cloudflare Pages,
+        and served from the edge. Fonts: Fraunces (Undercase Type), Inter
+        (Rasmus Andersson), IBM Plex Mono (IBM Brand). Source is on
+        <a href={`https://github.com/${SITE.social.github}/website`}>GitHub</a>.
+      </p>
+    </div>
+  </section>
+</Base>

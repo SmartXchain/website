@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../lib/site';
+
+const updated = '2026-05-23';
+---
+
+<Base
+  title={`Privacy — ${SITE.name}`}
+  description={`How ${SITE.name} handles your data.`}
+>
+  <section class="container-wide py-20">
+    <div class="kicker">// privacy</div>
+    <h1 class="mt-3 font-display text-5xl font-extrabold tracking-tight text-white md:text-6xl">
+      Privacy
+    </h1>
+    <p class="ui-text mt-3">// last updated {updated}</p>
+
+    <div class="prose-frontier mt-10">
+      <p>
+        SmartXChain is built to be privacy-friendly by default. We don't run
+        third-party advertising, we don't use cookies for tracking, and we
+        don't sell or rent your data.
+      </p>
+
+      <h2>What we collect</h2>
+
+      <h3>Newsletter subscribers</h3>
+      <p>
+        If you subscribe to <em>{SITE.newsletter.name}</em>, your email address
+        is stored at our newsletter provider, <a href="https://buttondown.email/about/privacy">Buttondown</a>.
+        Buttondown is the data processor; SmartXChain is the controller. We
+        only use your email to send the newsletter you signed up for. Every
+        email contains an unsubscribe link. Unsubscribing removes you from
+        the list immediately and permanently.
+      </p>
+
+      <h3>Analytics</h3>
+      <p>
+        We use <a href="https://www.cloudflare.com/web-analytics/">Cloudflare
+        Web Analytics</a> to understand which articles are read. It is
+        cookie-less, privacy-friendly, and does not track individual visitors
+        across sessions or sites. It collects only aggregated, anonymized
+        page-view counts.
+      </p>
+
+      <h3>Logs</h3>
+      <p>
+        Cloudflare, our hosting provider, retains standard request logs (IP
+        address, timestamp, user agent) for a short period for security and
+        abuse-prevention purposes. We do not access or use these logs for any
+        editorial or marketing purpose.
+      </p>
+
+      <h2>What we don't do</h2>
+      <ul>
+        <li>We don't use tracking cookies.</li>
+        <li>We don't run third-party ad networks.</li>
+        <li>We don't share your email with anyone outside Buttondown.</li>
+        <li>We don't fingerprint visitors.</li>
+        <li>We don't have a cookie banner because we don't need one.</li>
+      </ul>
+
+      <h2>Your rights</h2>
+      <p>
+        You can unsubscribe from the newsletter at any time using the link in
+        every issue. If you'd like your data removed from Buttondown entirely,
+        email us at <a href="mailto:hectorg@smartxchain.com">hectorg@smartxchain.com</a>
+        and we'll handle it.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        We'll update this page if our practices change. The "last updated"
+        date above tells you when. Material changes get announced in the
+        newsletter.
+      </p>
+    </div>
+  </section>
+</Base>
