@@ -1,39 +1,46 @@
 ---
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import HeroPost from '../components/HeroPost.astro';
+import RotatingHero from '../components/RotatingHero.astro';
 import SignalSidebar from '../components/SignalSidebar.astro';
 import PostCard from '../components/PostCard.astro';
 import SignalOfWeek from '../components/SignalOfWeek.astro';
 import { sections } from '../lib/sections';
 import { sortByDateDesc } from '../lib/posts';
 
+type Post = CollectionEntry<'posts'>;
+
 const allPosts = await getCollection('posts', ({ data }) => !data.draft);
 const sorted = sortByDateDesc(allPosts);
 
-const featured = sorted.find((p) => p.data.featured) ?? sorted[0];
-const remainder = featured
-  ? sorted.filter((p) => p.slug !== featured.slug)
-  : [];
+// One slide per category that has at least one published post
+const heroSlides = sections
+  .map((s) => sorted.find((p) => p.data.category === s.slug))
+  .filter((p): p is Post => p !== undefined);
 
-const signalItems = remainder.slice(0, 4);
+// Sidebar: 4 most recent posts overall (static, doesn't track the rotating hero)
+const signalItems = sorted.slice(0, 4);
 
-const latestPerCategory = sections
-  .map((s) => remainder.find((p) => p.data.category === s.slug))
-  .filter((p): p is NonNullable<typeof p> => p !== undefined);
-const categoryGrid = sortByDateDesc(latestPerCategory).slice(0, 3);
+// Category grid: latest per section, top 3 by date
+const categoryGrid = sortByDateDesc(
+  sections
+    .map((s) => sorted.find((p) => p.data.category === s.slug))
+    .filter((p): p is Post => p !== undefined),
+).slice(0, 3);
 
+// Signal of week: latest research post, fallback to second-most-recent overall
 const signalOfWeek =
-  remainder.find((p) => p.data.category === 'research') ?? remainder[1];
+  sorted.find((p) => p.data.category === 'research') ?? sorted[1];
 ---
 
 <Base title="SmartXChain — Signal from the frontier">
   {
-    featured ? (
+    heroSlides.length > 0 ? (
       <section
         class={`container-wide grid gap-12 py-16 md:py-20 ${signalItems.length > 0 ? 'md:grid-cols-[2.2fr_1fr]' : ''}`}
       >
-        <HeroPost post={featured} />
+        <RotatingHero posts={heroSlides} />
         {signalItems.length > 0 && <SignalSidebar items={signalItems} />}
       </section>
     ) : (
