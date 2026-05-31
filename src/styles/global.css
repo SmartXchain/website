@@ -115,3 +115,31 @@
     @apply border-frontier-signal text-frontier-signal;
   }
 }
+
+/* ── Rotating hero ────────────────────────────────────────────────── */
+.hero-slide {
+  opacity: 0;
+  transition: opacity 600ms ease;
+  pointer-events: none;
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+}
+.hero-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
+}
+@keyframes hero-tick {
+  from { width: 0 }
+  to   { width: 100% }
+}
+.hero-slide.active .hero-progress {
+  animation: hero-tick 10s linear forwards;
+}
+.hero-rotate-wrap:hover .hero-progress {
+  animation-play-state: paused;
+}
+.hero-rotate-wrap:hover .hero-slide.active .hero-pause-badge {
+  display: block;
+}
