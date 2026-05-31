@@ -1,0 +1,97 @@
+---
+import type { Post } from '../lib/posts';
+import { getEntry } from 'astro:content';
+import { getSection } from '../lib/sections';
+import { readTime, formatStamp } from '../lib/posts';
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+
+const slides = await Promise.all(
+  posts.map(async (post) => {
+    const author = await getEntry(post.data.author);
+    const section = getSection(post.data.category);
+    const mins = readTime(post.body);
+    const stamp = formatStamp(post.data.updatedAt ?? post.data.date);
+    return { post, author, section, mins, stamp };
+  }),
+);
+---
+
+<div class="hero-rotate-wrap relative border-b-2 border-frontier-signal pb-6" id="rotating-hero">
+  {
+    slides.map(({ post, author, section, mins, stamp }, i) => (
+      <div class:list={['hero-slide', i === 0 && 'active']}>
+        <a href={`/posts/${post.slug}`} class="block group">
+          <div
+            class="mb-5 font-mono text-xs uppercase tracking-kicker"
+            style={`color:${section.accentHex}`}
+          >
+            // Lead Story — {section.name}
+          </div>
+          <h2 class="mt-0 max-w-[22ch] font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-frontier-text transition-colors group-hover:text-frontier-signal md:text-6xl">
+            {post.data.title}
+          </h2>
+          <p class="mt-5 max-w-prose text-lg text-frontier-text-muted md:text-xl">
+            {post.data.excerpt}
+          </p>
+          <div class="ui-text mt-7">
+            {mins.toLocaleString()} MIN READ · BY {author.data.name.toUpperCase()} · {stamp}
+          </div>
+        </a>
+        <div class="mt-5 h-[2px] overflow-hidden bg-frontier-border">
+          <div
+            class="hero-progress h-full w-0 rounded-sm"
+            style={`background:${section.accentHex}`}
+          />
+        </div>
+        <p class="hero-pause-badge mt-2 hidden font-mono text-xs uppercase tracking-ui text-frontier-text-dim">
+          ⏸ paused
+        </p>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  const wrap = document.getElementById('rotating-hero');
+  if (wrap) {
+    const slides = wrap.querySelectorAll<HTMLElement>('.hero-slide');
+    const INTERVAL = 10_000;
+    let current = 0;
+    let timer: ReturnType<typeof setInterval> | null = null;
+    let paused = false;
+
+    function goTo(idx: number) {
+      slides[current].classList.remove('active');
+      current = ((idx % slides.length) + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      const bar = slides[current].querySelector<HTMLElement>('.hero-progress');
+      if (bar) {
+        bar.style.animation = 'none';
+        bar.getBoundingClientRect(); // force reflow to restart animation
+        bar.style.animation = '';
+      }
+      restartTimer();
+    }
+
+    function restartTimer() {
+      if (timer) clearInterval(timer);
+      if (!paused) timer = setInterval(() => goTo(current + 1), INTERVAL);
+    }
+
+    wrap.addEventListener('mouseenter', () => {
+      paused = true;
+      if (timer) clearInterval(timer);
+    });
+    wrap.addEventListener('mouseleave', () => {
+      paused = false;
+      restartTimer();
+    });
+
+    restartTimer();
+  }
+</script>
