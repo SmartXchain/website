@@ -13,7 +13,12 @@ import SubscribeBox from '../../components/SubscribeBox.astro';
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  // In dev, generate routes for drafts too so you can preview them at
+  // /posts/<slug>. In production builds, drafts are excluded.
+  const includeDrafts = import.meta.env.DEV;
+  const posts = await getCollection('posts', ({ data }) =>
+    includeDrafts ? true : !data.draft,
+  );
   return posts.map((post) => ({
     params: { slug: post.slug },
     props: { post },
