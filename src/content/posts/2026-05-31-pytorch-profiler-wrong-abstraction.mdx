@@ -1,0 +1,32 @@
+---
+title: "Hugging Face is chasing the deployer, and torch.profiler is the wrong abstraction"
+date: 2026-05-31T11:00:00Z
+author: hector-garza
+category: ai-lab
+tags: ["pytorch", "profiling", "ml-tools", "deployers", "huggingface"]
+excerpt: "Hugging Face publishing a beginner's torch.profiler guide tells you where their content strategy is going: the deployer and the researcher, not the API customer. The tutorial is correct. The abstraction it teaches is wrong for the work that matters now."
+featured: false
+draft: false
+---
+
+Hugging Face published part one of a beginner's guide to `torch.profiler` this week. On its own, it is a good tutorial — clearly written, focused on a real tool. As a strategy signal, it is more interesting than the content. HF is putting craft content for deployers and researchers at the top of its blog, not API onboarding for end users. That is the company telling you who it expects to matter in the next eighteen months.
+
+The thesis here has two parts. First: deployers are the new customer profile worth chasing. Second: `torch.profiler` is the wrong tool to put in their hands as the first abstraction.
+
+## The deployer is back
+
+Two years ago, the consensus customer for inference tooling was the API consumer. You hit an endpoint, you paid per token, you did not care what hardware ran underneath. That model worked for chatbots. It does not work for the workloads people now actually ship — agent loops with high per-task token budgets, batch reasoning jobs, on-device or VPC inference where the latency tail matters more than the average.
+
+Those workloads run on infrastructure the deployer owns or rents. The deployer needs to understand throughput, memory pressure, kernel launches, host-device transfer. The skill stack that used to live inside hyperscaler ML platform teams is migrating outward, into product engineering. HF's content shift tracks that migration.
+
+## torch.profiler is for kernel authors, not deployers
+
+Here is where I think the tutorial misleads. `torch.profiler` produces function-level statistics: which CUDA kernels ran, how long they took, what the host-device gap looked like. That is useful information if you are writing a new attention kernel or hunting a regression in PyTorch itself. It is the wrong default view for a deployer trying to figure out why their agent is slow.
+
+The deployer's actual question is almost never "which kernel is hot." It is "where does my latency go on a real request, end to end, including the framework, the serving layer, the network, and the model." Answering that requires trace-timeline tooling — flamegraphs of real requests, span-level instrumentation, distributed traces that cross process boundaries. `torch.profiler` is a microscope when the deployer needs a wide-angle lens.
+
+## Where the gap is
+
+The tutorial is correct in what it says. What it does not say is that most deployer-side performance problems live above the layer `torch.profiler` sees. Tokenizer cost, batching strategy, scheduler behavior, KV cache eviction, the queueing model in front of the GPU — these are the levers that move real production latency.
+
+The honest follow-up post is not "Profiling in PyTorch, part two." It is a post about end-to-end inference tracing for serving stacks, ideally with vLLM, TGI, or SGLang traces alongside the PyTorch view. HF is in the best possible position to write that post. They have the deployer audience and the serving stack. I would read it the moment it shipped.
