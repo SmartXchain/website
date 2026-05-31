@@ -60,6 +60,7 @@ const slides = await Promise.all(
   const wrap = document.getElementById('rotating-hero');
   if (wrap) {
     const slides = wrap.querySelectorAll<HTMLElement>('.hero-slide');
+    if (slides.length <= 1) return; // nothing to rotate
     const INTERVAL = 10_000;
     let current = 0;
     let timer: ReturnType<typeof setInterval> | null = null;
