@@ -60,39 +60,40 @@ const slides = await Promise.all(
   const wrap = document.getElementById('rotating-hero');
   if (wrap) {
     const slides = wrap.querySelectorAll<HTMLElement>('.hero-slide');
-    if (slides.length <= 1) return; // nothing to rotate
-    const INTERVAL = 10_000;
-    let current = 0;
-    let timer: ReturnType<typeof setInterval> | null = null;
-    let paused = false;
+    if (slides.length > 1) {
+      const INTERVAL = 10_000;
+      let current = 0;
+      let timer: ReturnType<typeof setInterval> | null = null;
+      let paused = false;
 
-    function goTo(idx: number) {
-      slides[current].classList.remove('active');
-      current = ((idx % slides.length) + slides.length) % slides.length;
-      slides[current].classList.add('active');
-      const bar = slides[current].querySelector<HTMLElement>('.hero-progress');
-      if (bar) {
-        bar.style.animation = 'none';
-        bar.getBoundingClientRect(); // force reflow to restart animation
-        bar.style.animation = '';
+      function goTo(idx: number) {
+        slides[current].classList.remove('active');
+        current = ((idx % slides.length) + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        const bar = slides[current].querySelector<HTMLElement>('.hero-progress');
+        if (bar) {
+          bar.style.animation = 'none';
+          bar.getBoundingClientRect(); // force reflow to restart animation
+          bar.style.animation = '';
+        }
+        restartTimer();
       }
+
+      function restartTimer() {
+        if (timer) clearInterval(timer);
+        if (!paused) timer = setInterval(() => goTo(current + 1), INTERVAL);
+      }
+
+      wrap.addEventListener('mouseenter', () => {
+        paused = true;
+        if (timer) clearInterval(timer);
+      });
+      wrap.addEventListener('mouseleave', () => {
+        paused = false;
+        restartTimer();
+      });
+
       restartTimer();
     }
-
-    function restartTimer() {
-      if (timer) clearInterval(timer);
-      if (!paused) timer = setInterval(() => goTo(current + 1), INTERVAL);
-    }
-
-    wrap.addEventListener('mouseenter', () => {
-      paused = true;
-      if (timer) clearInterval(timer);
-    });
-    wrap.addEventListener('mouseleave', () => {
-      paused = false;
-      restartTimer();
-    });
-
-    restartTimer();
   }
 </script>
