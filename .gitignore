@@ -33,3 +33,6 @@ Thumbs.db
 
 # Pagefind index (regenerated on build)
 public/pagefind/
+
+# Visual brainstorming sessions
+.superpowers/
