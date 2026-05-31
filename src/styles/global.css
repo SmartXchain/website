@@ -13,7 +13,7 @@
     @apply bg-frontier-bg text-frontier-text font-sans antialiased;
   }
   ::selection {
-    @apply bg-frontier-signal/30 text-white;
+    @apply bg-frontier-signal/30 text-frontier-text;
   }
   :focus-visible {
     @apply outline outline-2 outline-offset-2 outline-frontier-signal;
@@ -55,13 +55,13 @@
     margin-top: 1.25rem;
   }
   .prose-frontier h2 {
-    @apply mt-12 mb-4 font-display text-3xl font-bold tracking-tight text-white;
+    @apply mt-12 mb-4 font-display text-3xl font-bold tracking-tight text-frontier-text;
   }
   .prose-frontier h3 {
-    @apply mt-10 mb-3 font-display text-2xl font-bold tracking-tight text-white;
+    @apply mt-10 mb-3 font-display text-2xl font-bold tracking-tight text-frontier-text;
   }
   .prose-frontier h4 {
-    @apply mt-8 mb-2 font-display text-xl font-bold text-white;
+    @apply mt-8 mb-2 font-display text-xl font-bold text-frontier-text;
   }
   .prose-frontier a {
     @apply text-frontier-signal underline decoration-frontier-signal/40 underline-offset-4 transition-colors hover:decoration-frontier-signal;
@@ -86,7 +86,7 @@
     @apply my-2;
   }
   .prose-frontier strong {
-    @apply font-semibold text-white;
+    @apply font-semibold text-frontier-text;
   }
   .prose-frontier em {
     @apply italic;
@@ -114,4 +114,32 @@
   .archive-chip[data-active='true'] {
     @apply border-frontier-signal text-frontier-signal;
   }
+}
+
+/* ── Rotating hero ────────────────────────────────────────────────── */
+.hero-slide {
+  opacity: 0;
+  transition: opacity 600ms ease;
+  pointer-events: none;
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+}
+.hero-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
+}
+@keyframes hero-tick {
+  from { width: 0 }
+  to   { width: 100% }
+}
+.hero-slide.active .hero-progress {
+  animation: hero-tick 10s linear forwards;
+}
+.hero-rotate-wrap:hover .hero-progress {
+  animation-play-state: paused;
+}
+.hero-rotate-wrap:hover .hero-slide.active .hero-pause-badge {
+  display: block;
 }
