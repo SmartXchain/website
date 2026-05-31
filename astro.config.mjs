@@ -2,17 +2,22 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
+import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   site: 'https://smartxchain.com',
   trailingSlash: 'never',
+  output: 'hybrid',
+  adapter: cloudflare(),
   build: {
     format: 'directory',
   },
   integrations: [
     mdx(),
     tailwind({ applyBaseStyles: false }),
-    sitemap(),
+    sitemap({
+      filter: (page) => !page.includes('/admin/'),
+    }),
   ],
   prefetch: {
     prefetchAll: true,

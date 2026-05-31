@@ -18,6 +18,7 @@ interface Props {
   description?: string;
   noHeader?: boolean;
   noFooter?: boolean;
+  noIndex?: boolean;
   ogImage?: string;
   articleMeta?: ArticleMeta;
 }
@@ -27,6 +28,7 @@ const {
   description = SITE.description,
   noHeader,
   noFooter,
+  noIndex,
   ogImage = '/og.svg',
   articleMeta,
 } = Astro.props;
@@ -54,6 +56,7 @@ const baseJsonLd = {
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {noIndex && <meta name="robots" content="noindex,nofollow" />}
 
     <link rel="alternate" type="application/rss+xml" title={`${SITE.name} — Main feed`} href="/rss.xml" />
     <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />

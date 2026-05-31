@@ -1,0 +1,40 @@
+---
+title: "The bottleneck for AI in science is the marginal cost of expert supervision"
+date: 2026-05-31T14:00:00Z
+author: hector-garza
+category: research
+tags: ["arxiv", "ai-science", "expert-supervision", "agentic-coding"]
+excerpt: "Nhat-Minh Nguyen's paper on physicist-supervised AI development of scientific software says the loud part: agentic coding works when an expert directs it. The bottleneck for AI-in-science isn't capability. It's the marginal cost of expert time."
+featured: false
+draft: false
+---
+
+Nhat-Minh Nguyen published a paper this week titled "Physics Is All You Need? A Case Study in Physicist-Supervised AI Development of Scientific Software." The title is funny. The content is, accidentally, the most useful framing I have seen of where AI-in-science actually is in 2026.
+
+The case study walks through an AI coding agent building a physics module under direct human supervision. It carefully marks where the agent worked autonomously and where domain knowledge had to be injected. The pattern is the interesting part — it is not "AI replaces scientists" and it is not "AI is too dumb to help." It is a precise map of which sub-tasks compound expert time and which do not.
+
+## Agentic coding plus expert direction is the working configuration
+
+The agent succeeded autonomously on tasks that have an oracle inside the codebase: failing tests, type errors, refactors that preserve test pass rates. It needed the physicist's input on tasks that require knowing whether the output is physically meaningful — choosing the right boundary conditions, validating numerical stability, picking which approximations are safe.
+
+That pattern is not unique to physics. It is the same shape every domain expert who has tried to use agentic coding in their field has reported. The agent handles the mechanical parts of programming brilliantly. The agent has no way to know whether the output is right in the domain sense. Domain ground truth lives in the expert's head.
+
+## The bottleneck shifts from capability to expert time
+
+The implication is uncomfortable for two of the loudest narratives in AI right now. The narrative that says "AI scientists" will replace domain experts misreads the workflow. The narrative that says "AI is not ready for science" misreads how much capability already exists. Both narratives focus on agent capability. The actual constraint is the marginal cost of the expert's time.
+
+A physicist supervising an AI coding agent gets perhaps 3x leverage on the engineering portion of their work. That is huge. It is also bounded by how many parallel agent sessions a physicist can meaningfully supervise. The answer today is one to three. That number is the bottleneck. Doubling agent capability does not double the throughput. Doubling the expert's supervision bandwidth does.
+
+## Where the next research gets interesting
+
+The research direction worth funding is not "make the agent better at physics." It is "make supervision cheaper." That looks like:
+
+- Better tools for an expert to specify domain constraints once and have them enforced across many agent sessions
+- Better tools for the expert to triage which agent outputs need close review and which can be merged on signal-level checks
+- Better tools for the expert to externalize their tacit knowledge so a junior researcher or a second agent can supervise
+
+The companies and labs that crack supervision cost will have the most useful AI-in-science offering. The companies still selling "autonomous AI scientist" will spend the next two years discovering this bottleneck the expensive way.
+
+## Why this matters outside science
+
+Physics is the cleanest version of the supervision-cost story because the domain ground truth is hard, unambiguous, and lives in trained heads. The same pattern plays out in legal research, medical diagnostics, financial modeling, and every regulated engineering discipline. The Nguyen paper is a case study in physics. The lesson is general. Read it that way and it stops being a curiosity and starts being a roadmap.

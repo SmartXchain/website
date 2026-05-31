@@ -1,0 +1,134 @@
+---
+import Base from '../../layouts/Base.astro';
+import { fetchArxiv } from '../../lib/research/arxiv';
+import { fetchRssFeed } from '../../lib/research/rss';
+import { fetchStockQuotes } from '../../lib/research/stocks';
+import { RSS_SOURCES, WATCHLIST } from '../../lib/research/sources';
+import type { ResearchItem, SourceResult, StockQuote } from '../../lib/research/types';
+
+export const prerender = false;
+
+// Pull secrets from Cloudflare Workers runtime env. In `astro dev`, set them in
+// a `.dev.vars` file at the repo root (gitignored); in production, configure
+// them as Worker secrets via `wrangler secret put` or the Cloudflare dashboard.
+const env = (Astro.locals as any)?.runtime?.env ?? {};
+
+const [arxivResult, stockResult, ...rssResults] = await Promise.all([
+  fetchArxiv(12),
+  fetchStockQuotes(WATCHLIST, env),
+  ...RSS_SOURCES.map((s) => fetchRssFeed(s.name, s.url, 6)),
+]);
+
+const newsItems: ResearchItem[] = rssResults
+  .flatMap((r: SourceResult) => r.items)
+  .sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
+
+const failedSources = [arxivResult, ...rssResults].filter((r) => !r.ok);
+
+function fmtDate(d?: Date): string {
+  if (!d) return '';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function fmtChange(q: StockQuote): { text: string; up: boolean } {
+  const pct = q.changePercent;
+  if (pct === undefined) return { text: '—', up: false };
+  return {
+    text: `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`,
+    up: pct >= 0,
+  };
+}
+---
+
+<Base title="Research — SmartXChain (private)" noIndex>
+  <div class="mx-auto max-w-screen-xl px-4 py-10">
+    <header class="mb-10 border-b border-frontier-rule pb-6">
+      <p class="font-mono text-xs uppercase tracking-ui text-frontier-signal">Private — not indexed</p>
+      <h1 class="mt-2 font-display text-4xl text-frontier-ink">Research Stack</h1>
+      <p class="mt-2 max-w-2xl text-sm text-frontier-muted">
+        Primary sources for editorial commentary. Nothing here is published until you write a post in
+        <code class="font-mono text-xs">src/content/posts/</code> with <code class="font-mono text-xs">published: true</code>.
+      </p>
+      {failedSources.length > 0 && (
+        <p class="mt-4 rounded border border-red-500/40 bg-red-500/5 p-3 font-mono text-xs text-red-300">
+          {failedSources.length} source(s) failed: {failedSources.map((s) => `${s.source} (${s.error})`).join(' · ')}
+        </p>
+      )}
+    </header>
+
+    <!-- Markets -->
+    <section class="mb-12">
+      <h2 class="mb-4 font-mono text-xs uppercase tracking-ui text-frontier-signal">Markets · Watchlist</h2>
+      {!stockResult.ok && stockResult.items.length === 0 ? (
+        <p class="font-mono text-xs text-frontier-muted">
+          Set <code>FINNHUB_KEY</code> and/or <code>ALPHA_VANTAGE_KEY</code> in <code>.dev.vars</code> (local) or Worker secrets (prod).
+        </p>
+      ) : (
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+          {stockResult.items.map((q) => {
+            const c = fmtChange(q);
+            return (
+              <div class="border border-frontier-rule p-3">
+                <div class="flex items-baseline justify-between">
+                  <span class="font-mono text-sm font-semibold text-frontier-ink">{q.symbol}</span>
+                  <span class={`font-mono text-xs ${c.up ? 'text-green-400' : 'text-red-400'}`}>{c.text}</span>
+                </div>
+                <div class="mt-1 font-mono text-lg text-frontier-ink">${q.price.toFixed(2)}</div>
+                <div class="mt-1 font-mono text-[10px] uppercase text-frontier-muted">{q.source}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </section>
+
+    <div class="grid gap-12 lg:grid-cols-2">
+      <!-- AI Papers -->
+      <section>
+        <h2 class="mb-4 font-mono text-xs uppercase tracking-ui text-frontier-signal">AI Papers · arXiv</h2>
+        {arxivResult.ok ? (
+          <ul class="space-y-5">
+            {arxivResult.items.map((p) => (
+              <li class="border-l-2 border-frontier-rule pl-4">
+                <a href={p.url} target="_blank" rel="noopener noreferrer" class="block font-display text-lg leading-snug text-frontier-ink hover:text-frontier-signal">
+                  {p.title}
+                </a>
+                <p class="mt-1 font-mono text-[11px] uppercase tracking-wide text-frontier-muted">
+                  {fmtDate(p.publishedAt)}{p.authors?.length ? ` · ${p.authors.slice(0, 3).join(', ')}${p.authors.length > 3 ? ' et al.' : ''}` : ''}
+                </p>
+                {p.summary && <p class="mt-2 text-sm leading-relaxed text-frontier-muted">{p.summary}</p>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="font-mono text-xs text-red-400">arXiv failed: {arxivResult.error}</p>
+        )}
+      </section>
+
+      <!-- AI Company News -->
+      <section>
+        <h2 class="mb-4 font-mono text-xs uppercase tracking-ui text-frontier-signal">AI Co. News</h2>
+        <ul class="space-y-5">
+          {newsItems.slice(0, 30).map((n) => (
+            <li class="border-l-2 border-frontier-rule pl-4">
+              <a href={n.url} target="_blank" rel="noopener noreferrer" class="block font-display text-base leading-snug text-frontier-ink hover:text-frontier-signal">
+                {n.title}
+              </a>
+              <p class="mt-1 font-mono text-[11px] uppercase tracking-wide text-frontier-muted">
+                {n.source}{n.publishedAt ? ` · ${fmtDate(n.publishedAt)}` : ''}
+              </p>
+              {n.summary && <p class="mt-2 text-sm leading-relaxed text-frontier-muted">{n.summary}</p>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+
+    <footer class="mt-16 border-t border-frontier-rule pt-6">
+      <p class="font-mono text-[11px] uppercase tracking-ui text-frontier-muted">
+        Sources: arXiv (cs.AI · cs.LG · cs.CL) · {RSS_SOURCES.map((s) => s.name).join(' · ')} · Alpha Vantage · Finnhub.
+        Page is server-rendered live on each request.
+      </p>
+    </footer>
+  </div>
+</Base>
