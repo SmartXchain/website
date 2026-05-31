@@ -22,6 +22,7 @@ const posts = defineCollection({
       heroAlt: z.string().optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().default(false),
+      sourceUrl: z.string().url().optional(),
     }),
 });
 

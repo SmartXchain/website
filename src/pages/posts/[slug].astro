@@ -102,10 +102,22 @@ const articleJsonLd = {
       <p class="mt-5 max-w-prose text-xl text-frontier-text-muted">
         {post.data.excerpt}
       </p>
-      <div class="ui-text mt-8 border-y border-frontier-border py-4">
-        BY <a href={`/authors/${author.id}`} class="text-frontier-signal hover:opacity-80">{author.data.name.toUpperCase()}</a>
-        {author.data.role && <> · {author.data.role.toUpperCase()}</>}
-        {' '}· {stamp} · {mins} MIN READ
+      <div class="ui-text mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-frontier-border py-4">
+        <span>
+          BY <a href={`/authors/${author.id}`} class="text-frontier-signal hover:opacity-80">{author.data.name.toUpperCase()}</a>
+          {author.data.role && <> · {author.data.role.toUpperCase()}</>}
+          {' '}· {stamp} · {mins} MIN READ
+        </span>
+        {post.data.sourceUrl && (
+          <a
+            href={post.data.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1 border border-frontier-border px-2 py-0.5 font-mono text-xs uppercase tracking-ui text-frontier-text-dim transition-colors hover:border-frontier-signal hover:text-frontier-signal"
+          >
+            Source →
+          </a>
+        )}
       </div>
     </header>
 
